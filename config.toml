@@ -43,3 +43,15 @@ split = "2015-01-01"       # report both halves separately
 
 [paper]
 initial_capital = 10_000   # USD, simulated
+
+[practice]
+# Safety checks for mirroring the paper accounts onto OANDA PRACTICE (demo) accounts.
+# The OANDA client can only reach the practice server; there is no real-money setting.
+max_spread_bps = 10.0       # skip a pair if its bid/ask spread is wider than this
+max_deviation = 0.03        # skip a pair if the broker price is >3% from the paper price (bad data)
+max_gross = 4.5             # no orders at all if target gross leverage exceeds this
+max_order_x_nav = 3.0       # no single order larger than 3x the account's NAV
+halt_nav_fraction = 0.5     # halt if NAV falls below 50% of its starting value
+min_trade_usd = 50.0
+rebalance_threshold = 0.10  # ignore position drift smaller than 10%
+max_state_age_hours = 36.0  # don't act on a paper account that hasn't run recently

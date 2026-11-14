@@ -44,6 +44,22 @@ to `paper_ml/predictions.csv` and scored once its week ends, so you can compare 
 backtest. The backtest showed no edge, so judge it only after ~26 scored weeks. `paper_ml/REPORT.md` also
 shows the trend account over the same period. Unlike the trend account, it books interest carry.
 
+## OANDA practice accounts (demo money, real broker)
+Optionally, each paper account is mirrored onto its own **OANDA practice account**. That gives real broker
+prices, spreads, financing and order handling, still with fake money. `fxbot/oanda.py` can only reach
+`api-fxpractice.oanda.com`, and no setting points it at a live account. Safety checks in `config.toml [practice]`:
+market closed, stale paper account, bad price, wide spread, leverage and order-size caps, a halt at −50% NAV.
+
+To turn it on:
+1. Open a free OANDA practice account, add a second sub-account, and generate a personal access token.
+2. In GitHub, go to **Settings → Secrets and variables → Actions** and add the secrets `OANDA_API_TOKEN`,
+   `OANDA_ACCOUNT_TREND` and `OANDA_ACCOUNT_ML` (account ids look like `101-001-1234567-001`).
+3. The next workflow run trades both practice accounts and commits `practice_trend/` and `practice_ml/`.
+
+Commands: `python -m fxbot practice accounts` lists the token's accounts.
+`python -m fxbot practice run --strategy trend|ml [--dry-run]` places (or with `--dry-run`, only plans) orders.
+`python -m fxbot practice status --strategy trend|ml` compares the real costs with the paper assumptions.
+
 ## Setup
 ```bash
 pip install -r requirements.txt
@@ -63,7 +79,7 @@ python -m pytest -q
 Settings (pairs, spreads, mode, band, volatility target, leverage caps) are in `config.toml`.
 
 ## Deployment
-`.github/workflows/paper-trading.yml` runs at 00:30 UTC Tuesday to Saturday, after each weekday's close.
+`.github/workflows/paper-trading.yml` runs at 00:30 UTC Monday to Friday, while the FX market is open (Monday's run acts on Friday's close).
 It runs `paper run` and `paper report`, then commits `paper/` back to `main`. Use **Actions → Daily FX paper
 trading → Run workflow** to start it right away (tick *backtest* to refresh `results/` too). The workflow
 needs **Settings → Actions → General → Workflow permissions → Read and write**. No secrets are needed.
@@ -77,6 +93,8 @@ fxbot/report.py    paper/REPORT.md + SVG chart, results/BACKTEST.md
 fxbot/factors.py   research: carry / momentum / value / trend sleeves with interest carry
 fxbot/model.py     learning model: features, walk-forward training, predictions
 fxbot/ml_paper.py  learning-model paper account (weekly retrain, live scorecard)
+fxbot/oanda.py     OANDA v20 client, practice server only
+fxbot/practice.py  mirrors a paper account onto an OANDA practice account, with safety checks
 fxbot/rates.py     research: FRED short-term rates per currency (lagged, no lookahead)
 research/          scripts behind results/RESEARCH.md
 tests/             no-lookahead, band, data-cleaning and paper-accounting tests

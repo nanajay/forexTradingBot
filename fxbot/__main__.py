@@ -21,6 +21,10 @@ def main(argv: list[str] | None = None) -> int:
     mp.add_argument("action", choices=["run", "status", "report"])
     mp.add_argument("--state", default=str(ROOT / "paper_ml"))
     mp.add_argument("--trend-state", default=str(ROOT / "paper"))
+    pr = sub.add_parser("practice", help="Mirror a paper account onto an OANDA PRACTICE account")
+    pr.add_argument("action", choices=["run", "status", "accounts"])
+    pr.add_argument("--strategy", choices=["trend", "ml"], default="trend")
+    pr.add_argument("--dry-run", action="store_true", help="plan orders but don't send them")
     sub.add_parser("signals", help="Print today's signal per pair (no trading)")
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
@@ -51,6 +55,25 @@ def main(argv: list[str] | None = None) -> int:
             print(ml_paper.status(state))
         else:
             print(ml_paper.report(cfg, state, Path(args.trend_state)))
+    elif args.cmd == "practice":
+        import os
+        from . import practice
+        from .oanda import OandaPractice
+        paper_dir = ROOT / ("paper" if args.strategy == "trend" else "paper_ml")
+        out_dir = ROOT / f"practice_{args.strategy}"
+        if args.action == "accounts":
+            for a in OandaPractice().accounts():
+                print(a["id"], a.get("tags", []))
+        elif args.action == "status":
+            print(practice.status(out_dir, cfg))
+        else:
+            var = f"OANDA_ACCOUNT_{args.strategy.upper()}"
+            account = os.environ.get(var, "")
+            if not account:
+                print(f"skipped: {var} is not set (no practice account for the {args.strategy} strategy)")
+                return 0
+            out = practice.run(cfg, args.strategy, paper_dir, out_dir, account, dry_run=args.dry_run)
+            print(out["log"])
     elif args.cmd == "paper":
         from . import paper
         state = Path(args.state)
