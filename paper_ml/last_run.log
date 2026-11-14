@@ -1,23 +1,94 @@
-Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/__main__.py", line 69, in <module>
-    raise SystemExit(main())
-                     ^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/__main__.py", line 48, in main
-    out = ml_paper.run(cfg, state)
-          ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/ml_paper.py", line 150, in run
-    pred, sd, imp, n_train = train_and_predict(panel)
-                             ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/ml_paper.py", line 98, in train_and_predict
-    m = M.make_model(MODEL_KIND)
-        ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/model.py", line 107, in make_model
-    return lgb.LGBMRegressor(n_estimators=300, learning_rate=0.02, num_leaves=8, min_child_samples=200,
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/lightgbm/sklearn.py", line 1478, in __init__
-    super().__init__(
-  File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/lightgbm/sklearn.py", line 721, in __init__
-    raise LightGBMError(
-lightgbm.basic.LightGBMError: scikit-learn is required for lightgbm.sklearn. You must install scikit-learn and restart your session to use this module.
+{
+ "log": "- 2026-11-14T15:51:06+00:00 week of 2026-11-13: equity $9,994.77 (-0.05%), gross 4.00x; retrained, 6 fill(s)",
+ "already_processed": false,
+ "fills": [
+  {
+   "time": "2026-11-14T15:51:06+00:00",
+   "signal_day": "2026-11-13",
+   "pair": "AUD/USD",
+   "side": "sell",
+   "units": 9841.55,
+   "price": 0.6774,
+   "notional_usd": 6666.67,
+   "cost_usd": 0.83,
+   "ccy_exposure": -0.6667
+  },
+  {
+   "time": "2026-11-14T15:51:06+00:00",
+   "signal_day": "2026-11-13",
+   "pair": "USD/CAD",
+   "side": "buy",
+   "units": 6666.67,
+   "price": 1.4269,
+   "notional_usd": 6666.67,
+   "cost_usd": 1.0,
+   "ccy_exposure": -0.6667
+  },
+  {
+   "time": "2026-11-14T15:51:06+00:00",
+   "signal_day": "2026-11-13",
+   "pair": "EUR/USD",
+   "side": "buy",
+   "units": 6045.22,
+   "price": 1.1028,
+   "notional_usd": 6666.67,
+   "cost_usd": 0.67,
+   "ccy_exposure": 0.6667
+  },
+  {
+   "time": "2026-11-14T15:51:06+00:00",
+   "signal_day": "2026-11-13",
+   "pair": "GBP/USD",
+   "side": "sell",
+   "units": 5047.06,
+   "price": 1.3209,
+   "notional_usd": 6666.67,
+   "cost_usd": 0.83,
+   "ccy_exposure": -0.6667
+  },
+  {
+   "time": "2026-11-14T15:51:06+00:00",
+   "signal_day": "2026-11-13",
+   "pair": "USD/JPY",
+   "side": "sell",
+   "units": 6666.67,
+   "price": 159.686,
+   "notional_usd": 6666.67,
+   "cost_usd": 0.73,
+   "ccy_exposure": 0.6667
+  },
+  {
+   "time": "2026-11-14T15:51:06+00:00",
+   "signal_day": "2026-11-13",
+   "pair": "NZD/USD",
+   "side": "buy",
+   "units": 12066.37,
+   "price": 0.5525,
+   "notional_usd": 6666.67,
+   "cost_usd": 1.17,
+   "ccy_exposure": 0.6667
+  }
+ ],
+ "n_train_rows": 7826,
+ "pred": {
+  "AUD": -0.1285,
+  "CAD": -0.2274,
+  "CHF": -0.12,
+  "EUR": -0.0845,
+  "GBP": -0.1705,
+  "JPY": 0.1025,
+  "NZD": 0.0347
+ },
+ "exposure": {
+  "AUD": -0.667,
+  "CAD": -0.667,
+  "CHF": 0.0,
+  "EUR": 0.667,
+  "GBP": -0.667,
+  "JPY": 0.667,
+  "NZD": 0.667
+ }
+}
+ML PAPER account since 2026-11-14T15:51:06+00:00 (start $10,000.00)
+equity $9,994.77 (-0.05%), weeks traded 1, costs $5.23, financing $0.00, carry $+0.00
+live scorecard: {'weeks_scored': 0}
