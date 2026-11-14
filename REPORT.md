@@ -1,12 +1,12 @@
 # FX bot overview
 
-Updated Sat 14 Nov 2026, 17:32 UTC · **practice and simulated money only, no real trades**
+Updated Sat 14 Nov 2026, 17:34 UTC · **practice and simulated money only, no real trades**
 
 | Strategy | Account | Value | Today | Since start |
 |---|---|---:|---|---|
 | [📈 Forex trend strategy](paper/REPORT.md) | Paper (simulated) | **$9,994.68** | ⚪ first day | 🔴 −0.05% |
 |  | OANDA practice | **£100,000.00** | ⚪ first day | ⚪ +0.00% |
-| [🤖 Forex learning model](paper_ml/REPORT.md) | Paper (simulated) | **$9,994.70** | ⚪ first day | 🔴 −0.05% |
+| [🤖 Forex learning model](paper_ml/REPORT.md) | Paper (simulated) | **$9,994.68** | ⚪ first day | 🔴 −0.05% |
 |  | OANDA practice | **£100,000.00** | ⚪ first day | ⚪ +0.00% |
 
 ## Today's trades

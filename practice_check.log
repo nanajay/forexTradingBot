@@ -1,1 +1,9 @@
-token FAILED on account list: OANDA GET /v3/accounts -> 401: {"errorMessage":"Insufficient authorization to perform request."}
+token OK: it can reach 2 account(s): …814-001, …814-002
+[trend] …814-001: listed for this token
+    summary: OK (currency GBP, NAV 100,000.00)
+    positions: OK
+    pricing: OK
+[ml] …814-002: listed for this token
+    summary: OK (currency GBP, NAV 100,000.00)
+    positions: OK
+    pricing: OK

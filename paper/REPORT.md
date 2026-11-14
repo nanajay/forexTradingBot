@@ -1,6 +1,6 @@
 # 📈 Forex trend strategy
 
-Updated Sat 14 Nov 2026, 17:32 UTC · **practice and simulated money only, no real trades**
+Updated Sat 14 Nov 2026, 17:34 UTC · **practice and simulated money only, no real trades**
 
 > Follows the trend of each of the 7 major currency pairs: 7 fixed signals per pair (price vs its 20/50/100/200-day averages, 30/90/180-day momentum). Long when the trend is up, short when it's down, sized to a 10% volatility target. Trades when a pair's signal changes.
 

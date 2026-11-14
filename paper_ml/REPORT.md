@@ -1,6 +1,6 @@
 # 🤖 Forex learning model
 
-Updated Sat 14 Nov 2026, 17:32 UTC · **practice and simulated money only, no real trades**
+Updated Sat 14 Nov 2026, 17:34 UTC · **practice and simulated money only, no real trades**
 
 > A LightGBM model retrained every week on 24 inputs per currency (momentum, trend, volatility, interest rates, market mood). Each Monday it buys the 3 currencies it expects to be strongest next week and sells the 3 weakest, with no net bet on the dollar, 10% volatility target.
 
@@ -8,7 +8,7 @@ Updated Sat 14 Nov 2026, 17:32 UTC · **practice and simulated money only, no re
 
 | | Paper (simulated $) | OANDA practice (demo £) |
 |---|---:|---:|
-| **Account value** | **$9,994.70** | **£100,000.00** |
+| **Account value** | **$9,994.68** | **£100,000.00** |
 | Today | ⚪ first day | ⚪ first day |
 | Since start | 🔴 −0.05% (since 2026-11-14) | ⚪ +0.00% (since 2026-11-14) |
 | Trading costs paid | $5.23 | in the OANDA fill prices |
