@@ -100,3 +100,17 @@ def test_practice_host_is_hardcoded():
     assert oanda.PRACTICE_HOST == "https://api-fxpractice.oanda.com"
     src = open(oanda.__file__).read()
     assert "api-fxtrade" not in src                                  # the live host appears nowhere
+
+
+def test_errors_hide_account_ids(monkeypatch):
+    import pytest
+    from fxbot import oanda
+
+    class R:
+        status_code = 400
+        text = '{"errorMessage":"Invalid value specified for accountID"}'
+    c = oanda.OandaPractice(token="x")
+    monkeypatch.setattr(c.s, "request", lambda *a, **k: R())
+    with pytest.raises(RuntimeError) as e:
+        c.summary("101-001-5727429-001")
+    assert "5727429" not in str(e.value) and "<id>" in str(e.value)

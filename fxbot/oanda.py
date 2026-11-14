@@ -12,6 +12,7 @@ Credentials come from environment variables (GitHub secrets), never from files:
 from __future__ import annotations
 
 import os
+import re
 import time
 import uuid
 
@@ -53,9 +54,11 @@ class OandaPractice:
                 time.sleep(2 ** attempt)
                 continue
             if r.status_code >= 400:
-                raise RuntimeError(f"OANDA {method} {path} -> {r.status_code}: {r.text[:300]}")
+                # logs are committed to a public repo: never print account ids
+                shown = re.sub(r"/accounts/[^/]+", "/accounts/<id>", path)
+                raise RuntimeError(f"OANDA {method} {shown} -> {r.status_code}: {r.text[:300]}")
             return r.json()
-        raise RuntimeError(f"OANDA {method} {path} failed: {last}")
+        raise RuntimeError(f"OANDA {method} {re.sub(r'/accounts/[^/]+', '/accounts/<id>', path)} failed: {last}")
 
     # ---- reads -------------------------------------------------------------------------
     def accounts(self) -> list[dict]:

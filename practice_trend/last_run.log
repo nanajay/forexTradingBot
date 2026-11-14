@@ -11,8 +11,8 @@ Traceback (most recent call last):
     summ = client.summary(account)
            ^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 65, in summary
-    return self._req("GET", f"/v3/accounts/{account}/summary")["account"]
+    return self._req("GET", f"/v3/accounts/<id>/summary")["account"]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 56, in _req
     raise RuntimeError(f"OANDA {method} {path} -> {r.status_code}: {r.text[:300]}")
-RuntimeError: OANDA GET /v3/accounts/5727429/summary -> 400: {"errorMessage":"Invalid value specified for 'accountID'"}
+RuntimeError: OANDA GET /v3/accounts/<id>/summary -> 400: {"errorMessage":"Invalid value specified for 'accountID'"}
