@@ -1,18 +1,1 @@
-Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/__main__.py", line 92, in <module>
-    raise SystemExit(main())
-                     ^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/__main__.py", line 75, in main
-    out = practice.run(cfg, args.strategy, paper_dir, out_dir, account, dry_run=args.dry_run)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/practice.py", line 123, in run
-    positions = client.positions(account)
-                ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 73, in positions
-    for p in self._req("GET", f"/v3/accounts/{account}/openPositions")["positions"]:
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 59, in _req
-    raise RuntimeError(f"OANDA {method} {shown} -> {r.status_code}: {r.text[:300]}")
-RuntimeError: OANDA GET /v3/accounts/<id>/openPositions -> 401: {"errorMessage":"Insufficient authorization to perform request."}
+- 2026-11-14T16:34:26+00:00 [trend] NAV 100,000.00 GBP (+0.00% since 2026-11-14), gross 0.00x; 0 order(s), 0 filled; skipped: [{'pair': 'EUR/USD', 'reason': 'not tradeable (market closed?)'}, {'pair': 'GBP/USD', 'reason': 'not tradeable (market closed?)'}, {'pair': 'USD/JPY', 'reason': 'not tradeable (market closed?)'}, {'pair': 'AUD/USD', 'reason': 'not tradeable (market closed?)'}, {'pair': 'USD/CAD', 'reason': 'not tradeable (market closed?)'}, {'pair': 'USD/CHF', 'reason': 'not tradeable (market closed?)'}, {'pair': 'NZD/USD', 'reason': 'not tradeable (market closed?)'}]

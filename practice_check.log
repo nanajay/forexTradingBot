@@ -1,0 +1,8 @@
+token FAILED on account list: OANDA GET /v3/accounts failed: 504 <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Internal Server Error</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preload" as=

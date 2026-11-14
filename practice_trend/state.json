@@ -1,0 +1,9 @@
+{
+ "strategy": "trend",
+ "account": "-001",
+ "currency": "GBP",
+ "started": "2026-11-14T16:34:26+00:00",
+ "start_nav": 100000.0,
+ "halted": false,
+ "last_run": "2026-11-14T16:34:26+00:00"
+}
