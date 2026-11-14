@@ -136,3 +136,16 @@ def test_gbp_account_nav_converted_to_usd(tmp_path):
     out = practice.run(cfg, "trend", d, tmp_path / "out", "101-004-1-001", fake, now)
     eur = [o for o in out["orders"] if o["pair"] == "EUR/USD"][0]
     assert eur["units"] == round(0.5 * 130_000 / 1.10)     # 50% of the USD value of the GBP NAV
+
+
+def test_check_reports_per_endpoint_and_masks_ids():
+    class F(FakeOanda):
+        def accounts(self):
+            return [{"id": "101-004-40999814-001"}]
+
+        def positions(self, a):
+            raise RuntimeError("OANDA GET /v3/accounts/<id>/openPositions -> 401")
+    out = practice.check(F(), {"trend": "101-004-40999814-001", "ml": "101-004-40999814-002"}, ["EUR_USD"])
+    assert "40999814" not in out
+    assert "[trend] …814-001: listed" in out and "[ml] …814-002: NOT among" in out
+    assert "positions: FAILED" in out and "summary: OK" in out

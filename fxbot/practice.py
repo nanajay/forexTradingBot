@@ -218,3 +218,36 @@ def status(out_dir: Path, cfg: dict) -> str:
                          f"(paper assumes {sum(assumed.values()) / len(assumed):.2f} bps); "
                          f"{(f.status != 'filled').sum()} not filled")
     return "\n".join(lines)
+
+
+def mask(account_id: str) -> str:
+    """Show only the last 7 characters (e.g. '…814-001'): enough to tell accounts apart in public logs."""
+    return "…" + account_id[-7:] if account_id else "(not set)"
+
+
+def check(client: OandaPractice, accounts: dict[str, str], instruments: list[str]) -> str:
+    """Test each OANDA request the bot needs, per configured account. Read-only: places no orders."""
+    lines = []
+    try:
+        listed = client.accounts()
+        ids = [a["id"] for a in listed]
+        lines.append(f"token OK: it can reach {len(ids)} account(s): " + ", ".join(mask(i) for i in ids))
+    except Exception as e:
+        return f"token FAILED on account list: {e}"
+    for name, acc in accounts.items():
+        if not acc:
+            lines.append(f"[{name}] account not set")
+            continue
+        lines.append(f"[{name}] {mask(acc)}: {'listed for this token' if acc in ids else 'NOT among the token accounts'}")
+        for label, fn in (("summary", lambda: client.summary(acc)),
+                          ("positions", lambda: client.positions(acc)),
+                          ("pricing", lambda: client.pricing(acc, instruments))):
+            try:
+                out = fn()
+                extra = ""
+                if label == "summary":
+                    extra = f" (currency {out.get('currency')}, NAV {float(out['NAV']):,.2f})"
+                lines.append(f"    {label}: OK{extra}")
+            except Exception as e:
+                lines.append(f"    {label}: FAILED {str(e)[:160]}")
+    return "\n".join(lines)

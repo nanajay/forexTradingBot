@@ -57,6 +57,7 @@ jobs:
           OANDA_ACCOUNT_ML: ${{ secrets.OANDA_ACCOUNT_ML }}
         run: |
           mkdir -p practice_trend practice_ml
+          python -m fxbot practice check 2>&1 | tee practice_check.log
           python -m fxbot practice run --strategy trend 2>&1 | tee practice_trend/last_run.log
           python -m fxbot practice run --strategy ml 2>&1 | tee practice_ml/last_run.log
       - name: Backtest
@@ -67,7 +68,7 @@ jobs:
           git config user.name "fxbot (GitHub Actions)"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add paper paper_ml results
-          git add practice_trend practice_ml 2>/dev/null || true
+          git add practice_trend practice_ml practice_check.log 2>/dev/null || true
           if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
           git commit -m "Paper trading run $(date -u +%F)"
           for i in 1 2 3 4; do

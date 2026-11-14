@@ -22,7 +22,7 @@ def main(argv: list[str] | None = None) -> int:
     mp.add_argument("--state", default=str(ROOT / "paper_ml"))
     mp.add_argument("--trend-state", default=str(ROOT / "paper"))
     pr = sub.add_parser("practice", help="Mirror a paper account onto an OANDA PRACTICE account")
-    pr.add_argument("action", choices=["run", "status", "accounts"])
+    pr.add_argument("action", choices=["run", "status", "accounts", "check"])
     pr.add_argument("--strategy", choices=["trend", "ml"], default="trend")
     pr.add_argument("--dry-run", action="store_true", help="plan orders but don't send them")
     sub.add_parser("signals", help="Print today's signal per pair (no trading)")
@@ -64,6 +64,12 @@ def main(argv: list[str] | None = None) -> int:
         if args.action == "accounts":
             for a in OandaPractice().accounts():
                 print(a["id"], a.get("tags", []))
+        elif args.action == "check":
+            from .oanda import instrument
+            print(practice.check(OandaPractice(),
+                                 {"trend": os.environ.get("OANDA_ACCOUNT_TREND", ""),
+                                  "ml": os.environ.get("OANDA_ACCOUNT_ML", "")},
+                                 [instrument(p) for p in cfg["pairs"]]))
         elif args.action == "status":
             print(practice.status(out_dir, cfg))
         else:
