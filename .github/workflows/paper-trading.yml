@@ -96,7 +96,7 @@ jobs:
           ALERT_NTFY_TOPIC: ${{ secrets.ALERT_NTFY_TOPIC }}
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
         run: python -m fxbot alert --test 2>&1 | tee alert_test.log
-      - name: Alerts (phone / chat) on problems, plus a Monday check-in
+      - name: Daily summary alert (phone / chat), problems flagged high priority
         if: always()
         continue-on-error: true
         env:

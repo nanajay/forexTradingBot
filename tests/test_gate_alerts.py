@@ -83,34 +83,55 @@ def test_gate_change_flag(tmp_path):
 
 
 def test_alerts(tmp_path):
+    import os
     sent = []
     post = lambda url, **kw: sent.append((url, kw))
     tue = datetime(2026, 11, 17, 0, 40, tzinfo=timezone.utc)
-    mon = datetime(2026, 11, 16, 0, 40, tzinfo=timezone.utc)
     (tmp_path / "results").mkdir()
-    # quiet Tuesday: nothing sent
-    assert alerts.run(tmp_path, {"paper": "success"}, tue, post)["sent"] == []
-    # failed step -> alert through both channels
-    import os
+    # quiet day: a daily summary is still printed (nothing configured -> nothing sent)
+    r = alerts.run(tmp_path, {"paper": "success"}, tue, post)
+    assert r["sent"] == [] and "daily summary" in r["message"] and "not started" in r["body"]
     os.environ["ALERT_NTFY_TOPIC"] = "t-test"
     os.environ["ALERT_WEBHOOK_URL"] = "https://example.invalid/hook"
     try:
+        # failed step -> PROBLEM title, high priority, both channels
         r = alerts.run(tmp_path, {"paper": "success", "ml": "failure"}, tue, post)
-        assert r["sent"] == ["ntfy", "webhook"] and "ml" in r["problems"][0]
-        assert sent[0][0] == "https://ntfy.sh/t-test"
-        # mismatch in today's practice run
+        assert r["sent"] == ["ntfy", "webhook"] and "PROBLEM" in r["message"]
+        assert sent[0][0] == "https://ntfy.sh/t-test" and sent[0][1]["headers"]["Priority"] == "high"
+        # mismatch in today's practice run is reported
         d = tmp_path / "practice_trend"
         d.mkdir()
         (d / "RUNS.md").write_text("- 2026-11-17T00:31:00 [trend] ... MISMATCH: [{'pair': 'EUR/USD'}]\n")
         r = alerts.run(tmp_path, {}, tue, post)
         assert any("MISMATCH" in p for p in r["problems"])
-        (d / "RUNS.md").write_text("")
-        # Monday check-in even when all is well
-        r = alerts.run(tmp_path, {"paper": "success"}, mon, post)
-        assert "weekly check-in" in r["message"]
         # an alert failure never raises
         def boom(*a, **k):
             raise OSError("network down")
         assert alerts.run(tmp_path, {"ml": "failure"}, tue, boom)["sent"][0].startswith("failed")
     finally:
         del os.environ["ALERT_NTFY_TOPIC"], os.environ["ALERT_WEBHOOK_URL"]
+
+
+def test_daily_summary_shows_trades_day_change_and_total(tmp_path):
+    import pandas as pd
+    p = tmp_path / "paper"
+    p.mkdir()
+    (p / "state.json").write_text(json.dumps({"initial_capital": 10_000.0}))
+    pd.DataFrame({"time": ["2026-11-16T00:30:00+00:00", "2026-11-17T00:30:00+00:00"],
+                  "equity": [10_000.0, 10_100.0]}).to_csv(p / "equity.csv", index=False)
+    pd.DataFrame({"time": ["2026-11-17T00:30:00+00:00"], "pair": ["EUR/USD"], "side": ["buy"],
+                  "units": [1234.5]}).to_csv(p / "fills.csv", index=False)
+    q = tmp_path / "practice_trend"
+    q.mkdir()
+    (q / "state.json").write_text(json.dumps({"start_nav": 100_000.0, "currency": "GBP"}))
+    pd.DataFrame({"time": ["2026-11-16T00:31:00+00:00", "2026-11-17T00:31:00+00:00"],
+                  "nav": [100_000.0, 99_500.0]}).to_csv(q / "equity.csv", index=False)
+    pd.DataFrame({"time": ["2026-11-17T00:31:00+00:00"] * 2, "pair": ["EUR/USD", "USD/JPY"],
+                  "units": [5000, -3000], "status": ["filled", "rejected"], "price": [1.1, 150.0]}
+                 ).to_csv(q / "fills.csv", index=False)
+    lines = "\n".join(alerts.daily_summary(tmp_path, datetime(2026, 11, 17, 0, 40, tzinfo=timezone.utc)))
+    assert "TREND paper: $10,100.00 · today +1.00% · total +1.00%" in lines
+    assert "buy 1,234 EUR/USD" in lines or "buy 1,235 EUR/USD" in lines
+    assert "TREND practice: £99,500.00 · today -0.50% · total -0.50%" in lines
+    assert "buy 5,000 EUR/USD @ 1.1" in lines and "USD/JPY" not in lines      # rejected orders aren't trades
+    assert "ML practice: not connected" in lines

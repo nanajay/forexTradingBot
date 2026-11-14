@@ -65,10 +65,14 @@ def main(argv: list[str] | None = None) -> int:
     elif args.cmd == "alert":
         from .alerts import run as alert_run, send
         if args.test:
+            from datetime import datetime, timezone
+            from .alerts import daily_summary, gate_summary
             from .gate import report
-            gate_md = report(cfg, ROOT)
-            heads = "; ".join(l[3:].replace("**", "") for l in gate_md.splitlines() if l.startswith("## "))
-            sent = send("FX bot: test alert", f"Alerts are working.\nGate now: {heads}")
+            report(cfg, ROOT)
+            now = datetime.now(timezone.utc)
+            body = "\n".join(daily_summary(ROOT, now)) + f"\n\nGate: {gate_summary(ROOT)}"
+            sent = send(f"FX bot TEST {now:%a %d %b}: daily summary format", body)
+            print(body)
             print(f"test alert sent via: {sent or 'nothing configured: set ALERT_NTFY_TOPIC or ALERT_WEBHOOK_URL'}")
             return 0 if sent else 1
         outcomes = dict(kv.split("=", 1) for kv in args.outcomes.split() if "=" in kv)

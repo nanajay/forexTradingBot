@@ -70,14 +70,20 @@ Thresholds are in `config.toml [gate]`. Each strategy is **READY** only if every
 is too thin, otherwise **NOT READY**. READY means "eligible for a tiny live trial", nothing more.
 
 ## Alerts
-The workflow sends an alert when a step fails, when a practice run reports a position mismatch, halt or
-rejected order, and when a gate verdict changes. It also sends a short check-in every Monday, so a silent
-failure can't go unnoticed. Add either or both GitHub secrets:
+After every weekday run, the workflow sends one **daily summary**:
+* For each of the 4 accounts (trend and learning model, each on paper and OANDA practice): today's trades,
+  today's change, the total account value and the total change since the start.
+* The go-live gate verdicts, flagged when they change.
+* **Problems first, sent as high priority:** a failed step, a position mismatch, a halt, a rejected order or
+  a crash.
+
+If a weekday passes with no message, the workflow itself didn't run. Add either or both GitHub secrets:
 * `ALERT_NTFY_TOPIC`: push notifications to your phone via the free [ntfy](https://ntfy.sh) app. Subscribe to a
   long, random topic name; anyone who knows the name can read the messages.
 * `ALERT_WEBHOOK_URL`: a Slack or Discord incoming-webhook URL.
 
-Messages never contain account ids or tokens. `python -m fxbot alert --outcomes "paper=success ml=failure"` tests it.
+Messages never contain account ids or tokens. To preview the format, use **Actions → Daily FX paper trading →
+Run workflow → "Send a test alert"**.
 
 ## Setup
 ```bash
