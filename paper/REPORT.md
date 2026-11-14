@@ -1,6 +1,6 @@
 # Forex trend bot: paper report
 
-Updated 2026-11-14 17:08 UTC · signal day 2026-11-13 · **simulated: no real money**
+Updated 2026-11-14 17:16 UTC · signal day 2026-11-13 · **simulated: no real money**
 
 **Strategy:** forex trend rules on 7 major USD pairs: 7 fixed
 signals per pair (price vs its 20/50/100/200-day averages, 30/90/180-day momentum), long/short,
@@ -13,7 +13,7 @@ No learning model.
 
 | | |
 |---|---|
-| Account value | **$9,994.65** |
+| Account value | **$9,994.64** |
 | Change since start (2026-11-14) | -0.05% |
 | Gross leverage | 4.00x |
 | Trading costs paid | $5.32 |
