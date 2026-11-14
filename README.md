@@ -7,7 +7,8 @@ no broker connection in this repo.
 > **Read this first: the strategy has not worked on FX since 2015.** Backtested on daily closes from 2004 to
 > 2026, it made about +4% a year from 2004 to 2014 and lost about −7% a year from 2015 to 2026 after costs
 > (−5% a year **before** costs). Every single rule loses over 2015–2026, so this isn't one unlucky parameter.
-> Full numbers are in [results/BACKTEST.md](results/BACKTEST.md). The paper account is here to watch it live,
+> Full numbers are in [results/BACKTEST.md](results/BACKTEST.md). Carry, momentum, value and mixes were also
+> tested ([results/RESEARCH.md](results/RESEARCH.md)): none made money out of sample. The paper account is here to watch it live,
 > not as a reason to fund it.
 
 ## The strategy (same rules as the crypto bot)
@@ -64,5 +65,8 @@ fxbot/data.py      Yahoo daily closes: closed days only, weekends dropped, bad-t
 fxbot/strategy.py  rules, blend, band, vol sizing, backtest, performance stats
 fxbot/paper.py     paper account (multi-currency P&L in USD, financing, cost model)
 fxbot/report.py    paper/REPORT.md + SVG chart, results/BACKTEST.md
+fxbot/factors.py   research: carry / momentum / value / trend sleeves with interest carry
+fxbot/rates.py     research: FRED short-term rates per currency (lagged, no lookahead)
+research/          scripts behind results/RESEARCH.md
 tests/             no-lookahead, band, data-cleaning and paper-accounting tests
 ```

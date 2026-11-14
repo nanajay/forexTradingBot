@@ -1,0 +1,29 @@
+
+== IS 2004-2014 ==
+               strategy  CAGR%  sharpe  maxDD%  vol%  worst_yr%  carry%/yr  cost%/yr  lev
+   trend (crypto rules)    2.0    0.23   -19.0  11.3       -5.1       0.22      1.97 1.74
+                  carry    0.4    0.09   -31.4  10.4      -19.5       4.51      1.17 2.24
+           momentum 12m   -1.1   -0.07   -24.3  10.0       -9.1       0.88      1.51 2.19
+    value (5y reversal)    0.1    0.05   -20.5   7.1      -10.7      -0.32      0.86 1.50
+combo carry+trend+value    3.8    0.40   -18.4  10.7       -9.6       2.89      2.07 2.37
+      combo carry+value    1.1    0.15   -30.6  10.4      -19.5       3.77      1.49 2.68
+         combo all four    4.0    0.41   -15.9  10.8       -6.8       2.68      1.99 2.28
+
+== OOS 2015-2026 ==
+               strategy  CAGR%  sharpe  maxDD%  vol%  worst_yr%  carry%/yr  cost%/yr  lev
+   trend (crypto rules)   -3.5   -0.27   -37.2  11.2      -15.9       0.12      2.50 2.06
+                  carry   -0.5    0.00   -34.3  10.7      -12.9       3.88      1.47 2.83
+           momentum 12m   -3.6   -0.28   -34.8  10.8      -13.7      -0.11      2.02 2.90
+    value (5y reversal)   -2.5   -0.17   -35.5  11.1      -14.4       0.32      1.84 3.01
+combo carry+trend+value   -3.5   -0.17   -48.4  14.2      -30.2       2.70      2.57 2.83
+      combo carry+value   -2.1   -0.11   -35.6  12.4      -22.2       2.83      1.75 2.91
+         combo all four   -2.8   -0.15   -42.0  13.2      -27.4       2.43      2.74 2.82
+
+correlation IS:
+                       trend (crypto rules)  ...  value (5y reversal)
+trend (crypto rules)                  1.00  ...                 0.02
+carry                                -0.06  ...                 0.06
+momentum 12m                          0.37  ...                -0.05
+value (5y reversal)                   0.02  ...                 1.00
+
+[4 rows x 4 columns]
