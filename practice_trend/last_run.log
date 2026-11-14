@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/__main__.py", line 92, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/__main__.py", line 75, in main
+    out = practice.run(cfg, args.strategy, paper_dir, out_dir, account, dry_run=args.dry_run)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/practice.py", line 107, in run
+    summ = client.summary(account)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 65, in summary
+    return self._req("GET", f"/v3/accounts/{account}/summary")["account"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 56, in _req
+    raise RuntimeError(f"OANDA {method} {path} -> {r.status_code}: {r.text[:300]}")
+RuntimeError: OANDA GET /v3/accounts/5727429/summary -> 400: {"errorMessage":"Invalid value specified for 'accountID'"}
