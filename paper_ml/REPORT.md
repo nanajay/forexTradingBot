@@ -1,6 +1,6 @@
 # Forex learning model: paper report
 
-Updated 2026-11-14 16:24 UTC · week of 2026-11-13 · **simulated: no real money**
+Updated 2026-11-14 16:32 UTC · week of 2026-11-13 · **simulated: no real money**
 
 **Strategy:** LightGBM retrained every week on all past weeks (24 inputs per currency: momentum, trend, volatility,
 interest carry, risk sentiment). Long the 3 currencies predicted strongest for next week, short the 3 weakest, 10%
@@ -9,11 +9,11 @@ that on live data.
 
 | | |
 |---|---|
-| Account value | **$9,994.74** |
+| Account value | **$9,994.73** |
 | Change since start (2026-11-14) | -0.05% |
 | Trend paper account | not enough overlapping days yet |
 | Weeks traded | 1 |
-| Trading costs / financing / carry | $5.23 / $0.01 / $-0.02 |
+| Trading costs / financing / carry | $5.23 / $0.02 / $-0.02 |
 
 ## Live prediction scorecard
 Weeks scored: **0** · mean IC: n/a (backtest 2015–26: +0.014;

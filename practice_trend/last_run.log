@@ -7,12 +7,12 @@ Traceback (most recent call last):
   File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/__main__.py", line 75, in main
     out = practice.run(cfg, args.strategy, paper_dir, out_dir, account, dry_run=args.dry_run)
           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/practice.py", line 107, in run
-    summ = client.summary(account)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 65, in summary
-    return self._req("GET", f"/v3/accounts/<id>/summary")["account"]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 56, in _req
-    raise RuntimeError(f"OANDA {method} {path} -> {r.status_code}: {r.text[:300]}")
-RuntimeError: OANDA GET /v3/accounts/<id>/summary -> 400: {"errorMessage":"Invalid value specified for 'accountID'"}
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/practice.py", line 123, in run
+    positions = client.positions(account)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 73, in positions
+    for p in self._req("GET", f"/v3/accounts/{account}/openPositions")["positions"]:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 59, in _req
+    raise RuntimeError(f"OANDA {method} {shown} -> {r.status_code}: {r.text[:300]}")
+RuntimeError: OANDA GET /v3/accounts/<id>/openPositions -> 401: {"errorMessage":"Insufficient authorization to perform request."}
