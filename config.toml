@@ -1,0 +1,45 @@
+# ---------------------------------------------------------------
+# Forex trend bot: a port of the TradingBot BTC/ETH "blend" strategy
+# ---------------------------------------------------------------
+
+[strategy]
+# The same 7 fixed rules as the crypto bot, on DAILY closes (trading days):
+#   price vs its 20/50/100/200-day simple moving average, 30/90/180-day momentum.
+sma = [20, 50, 100, 200]
+mom = [30, 90, 180]
+# "long_short": each rule votes +1 (up) or -1 (down) -> blend in -1..+1 (FX trends both ways).
+# "long_only" : each rule votes 1 or 0 -> blend in 0..1, exactly like the crypto bot (cash when down).
+mode = "long_short"
+# No-trade band, as a fraction of the signal range (crypto bot: 0.15 of 0..1).
+# long_short range is 2, so the effective band there is 0.30. A move to a full
+# position (+1 / -1), to flat (0) or across zero always goes through.
+band = 0.15
+
+[sizing]
+# FX moves ~10x less than crypto, so positions are sized by volatility, not a fixed 50/50.
+# Each pair at full signal targets vol_target / sqrt(N) annual volatility.
+vol_target = 0.10          # 10% a year for the whole book if pairs were uncorrelated
+vol_lookback = 60          # days of returns used to measure each pair's volatility
+max_pair_leverage = 2.0    # |notional| per pair <= 2x equity
+max_gross_leverage = 4.0   # sum of |notional| <= 4x equity
+
+[pairs]
+# pair = [Yahoo symbol, typical spread in bps (1 bp = 0.01%)]
+"EUR/USD" = ["EURUSD=X", 1.0]
+"GBP/USD" = ["GBPUSD=X", 1.5]
+"USD/JPY" = ["USDJPY=X", 1.2]
+"AUD/USD" = ["AUDUSD=X", 1.5]
+"USD/CAD" = ["USDCAD=X", 2.0]
+"USD/CHF" = ["USDCHF=X", 2.0]
+"NZD/USD" = ["NZDUSD=X", 2.5]
+
+[costs]
+slippage_bps = 0.5         # on top of half the spread, per side
+financing_bps_year = 50    # rollover/swap markup charged on gross notional (real swaps vary by pair and side)
+
+[backtest]
+start = "2004-01-01"       # signals need ~200 days of history first
+split = "2015-01-01"       # report both halves separately
+
+[paper]
+initial_capital = 10_000   # USD, simulated
