@@ -1,6 +1,6 @@
 # Go-live gate
 
-Updated 2026-11-14 16:45 UTC. A strategy is **READY** only when every check passes. **WAIT** means not enough data yet. Thresholds: `config.toml [gate]`. Even READY means only "eligible for a tiny live trial", never "safe".
+Updated 2026-11-14 16:47 UTC. A strategy is **READY** only when every check passes. **WAIT** means not enough data yet. Thresholds: `config.toml [gate]`. Even READY means only "eligible for a tiny live trial", never "safe".
 
 ## Trend rules (crypto port): **WAIT**
 
