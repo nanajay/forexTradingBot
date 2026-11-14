@@ -12,6 +12,10 @@ on:
         description: "Also re-run the full backtest (results/BACKTEST.md)"
         type: boolean
         default: false
+      test_alert:
+        description: "Send a test alert to the phone / chat channels"
+        type: boolean
+        default: false
 
 permissions:
   contents: write              # to commit paper/ (and results/)
@@ -86,6 +90,12 @@ jobs:
             sleep $((i * 5)); git pull --rebase origin main
           done
           exit 1
+      - name: Test alert
+        if: ${{ inputs.test_alert }}
+        env:
+          ALERT_NTFY_TOPIC: ${{ secrets.ALERT_NTFY_TOPIC }}
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+        run: python -m fxbot alert --test 2>&1 | tee alert_test.log
       - name: Alerts (phone / chat) on problems, plus a Monday check-in
         if: always()
         continue-on-error: true

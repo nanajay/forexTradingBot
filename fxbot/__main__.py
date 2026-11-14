@@ -28,6 +28,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("gate", help="Score both strategies against the go-live gate -> results/GATE.md")
     al = sub.add_parser("alert", help="Send an alert if today's run had problems")
     al.add_argument("--outcomes", default="", help='e.g. "paper=success ml=failure practice=success"')
+    al.add_argument("--test", action="store_true", help="send a test message to the configured channels")
     sub.add_parser("signals", help="Print today's signal per pair (no trading)")
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
@@ -62,7 +63,14 @@ def main(argv: list[str] | None = None) -> int:
         from .gate import report
         print(report(cfg, ROOT))
     elif args.cmd == "alert":
-        from .alerts import run as alert_run
+        from .alerts import run as alert_run, send
+        if args.test:
+            from .gate import report
+            gate_md = report(cfg, ROOT)
+            heads = "; ".join(l[3:].replace("**", "") for l in gate_md.splitlines() if l.startswith("## "))
+            sent = send("FX bot: test alert", f"Alerts are working.\nGate now: {heads}")
+            print(f"test alert sent via: {sent or 'nothing configured: set ALERT_NTFY_TOPIC or ALERT_WEBHOOK_URL'}")
+            return 0 if sent else 1
         outcomes = dict(kv.split("=", 1) for kv in args.outcomes.split() if "=" in kv)
         alert_run(ROOT, outcomes)
     elif args.cmd == "practice":
