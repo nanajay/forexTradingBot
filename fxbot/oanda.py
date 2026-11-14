@@ -49,6 +49,12 @@ class OandaPractice:
                     raise
                 time.sleep(2 ** attempt)
                 continue
+            # reads only: OANDA sometimes answers a valid token with a passing 401 (token still
+            # syncing after a regenerate, weekend maintenance), so wait and try again
+            if method == "GET" and r.status_code == 401 and attempt < retries - 1:
+                last = RuntimeError(f"401 {r.text[:200]}")
+                time.sleep(3 * (attempt + 1))
+                continue
             if r.status_code >= 500 and method == "GET":
                 last = RuntimeError(f"{r.status_code} {r.text[:200]}")
                 time.sleep(2 ** attempt)

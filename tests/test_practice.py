@@ -149,3 +149,25 @@ def test_check_reports_per_endpoint_and_masks_ids():
     assert "40999814" not in out
     assert "[trend] …814-001: listed" in out and "[ml] …814-002: NOT among" in out
     assert "positions: FAILED" in out and "summary: OK" in out
+
+
+def test_reads_retry_a_passing_401_but_orders_never_retry(monkeypatch):
+    import pytest
+    from fxbot import oanda
+    monkeypatch.setattr(oanda.time, "sleep", lambda s: None)
+
+    class R:
+        def __init__(self, code, body):
+            self.status_code, self.text, self._b = code, str(body), body
+
+        def json(self):
+            return self._b
+    c = oanda.OandaPractice(token="x")
+    replies = [R(401, {}), R(200, {"account": {"NAV": "1"}})]
+    monkeypatch.setattr(c.s, "request", lambda *a, **k: replies.pop(0))
+    assert c.summary("101-004-1-001")["NAV"] == "1"
+    calls = []
+    monkeypatch.setattr(c.s, "request", lambda *a, **k: calls.append(1) or R(401, {}))
+    with pytest.raises(RuntimeError):
+        c.market_order("101-004-1-001", "EUR_USD", 100, "t")
+    assert len(calls) == 1
