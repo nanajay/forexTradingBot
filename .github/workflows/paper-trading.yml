@@ -36,11 +36,13 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - name: Paper run
+        id: paper
         run: |
           python -m fxbot paper run
           python -m fxbot paper report > /dev/null
           python -m fxbot paper status
       - name: Learning-model paper run (retrains weekly after the Friday close)
+        id: ml
         continue-on-error: true      # a model/data hiccup must not block the trend account's commit
         run: |
           mkdir -p paper_ml
@@ -49,6 +51,7 @@ jobs:
           { python -m fxbot ml run && python -m fxbot ml report > /dev/null && python -m fxbot ml status; } \
             2>&1 | tee paper_ml/last_run.log
       - name: OANDA practice accounts (demo money, real broker prices)
+        id: practice
         if: ${{ env.HAS_OANDA == 'true' }}
         continue-on-error: true
         env:
@@ -60,10 +63,17 @@ jobs:
           python -m fxbot practice check 2>&1 | tee practice_check.log
           python -m fxbot practice run --strategy trend 2>&1 | tee practice_trend/last_run.log
           python -m fxbot practice run --strategy ml 2>&1 | tee practice_ml/last_run.log
+      - name: Go-live gate
+        id: gate
+        if: always()
+        continue-on-error: true
+        run: python -m fxbot gate > /dev/null && sed -n '/^## /p' results/GATE.md
       - name: Backtest
         if: ${{ inputs.backtest }}
         run: python -m fxbot backtest
       - name: Commit and push results
+        id: commit
+        if: always()
         run: |
           git config user.name "fxbot (GitHub Actions)"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -76,3 +86,13 @@ jobs:
             sleep $((i * 5)); git pull --rebase origin main
           done
           exit 1
+      - name: Alerts (phone / chat) on problems, plus a Monday check-in
+        if: always()
+        continue-on-error: true
+        env:
+          ALERT_NTFY_TOPIC: ${{ secrets.ALERT_NTFY_TOPIC }}
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+        run: >-
+          python -m fxbot alert --outcomes
+          "paper=${{ steps.paper.outcome }} ml=${{ steps.ml.outcome }}
+          practice=${{ steps.practice.outcome }} gate=${{ steps.gate.outcome }} push=${{ steps.commit.outcome }}"

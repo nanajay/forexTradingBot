@@ -60,6 +60,24 @@ Commands: `python -m fxbot practice accounts` lists the token's accounts.
 `python -m fxbot practice run --strategy trend|ml [--dry-run]` places (or with `--dry-run`, only plans) orders.
 `python -m fxbot practice status --strategy trend|ml` compares the real costs with the paper assumptions.
 
+## Go-live gate
+`python -m fxbot gate` scores each strategy against fixed criteria and writes [results/GATE.md](results/GATE.md)
+on every run. The criteria: at least 26 weeks on OANDA practice, a profit after all costs (and for the learning
+model, a statistically significant live prediction IC), real costs within 25% of the assumptions, practice
+tracking paper within 3 points, no missed runs, mismatches or halts, and a drawdown no deeper than −20%.
+Thresholds are in `config.toml [gate]`. Each strategy is **READY** only if every check passes, **WAIT** while data
+is too thin, otherwise **NOT READY**. READY means "eligible for a tiny live trial", nothing more.
+
+## Alerts
+The workflow sends an alert when a step fails, when a practice run reports a position mismatch, halt or
+rejected order, and when a gate verdict changes. It also sends a short check-in every Monday, so a silent
+failure can't go unnoticed. Add either or both GitHub secrets:
+* `ALERT_NTFY_TOPIC`: push notifications to your phone via the free [ntfy](https://ntfy.sh) app. Subscribe to a
+  long, random topic name; anyone who knows the name can read the messages.
+* `ALERT_WEBHOOK_URL`: a Slack or Discord incoming-webhook URL.
+
+Messages never contain account ids or tokens. `python -m fxbot alert --outcomes "paper=success ml=failure"` tests it.
+
 ## Setup
 ```bash
 pip install -r requirements.txt
@@ -95,6 +113,8 @@ fxbot/model.py     learning model: features, walk-forward training, predictions
 fxbot/ml_paper.py  learning-model paper account (weekly retrain, live scorecard)
 fxbot/oanda.py     OANDA v20 client, practice server only
 fxbot/practice.py  mirrors a paper account onto an OANDA practice account, with safety checks
+fxbot/gate.py      go-live gate -> results/GATE.md
+fxbot/alerts.py    phone / chat alerts on problems, Monday check-in
 fxbot/rates.py     research: FRED short-term rates per currency (lagged, no lookahead)
 research/          scripts behind results/RESEARCH.md
 tests/             no-lookahead, band, data-cleaning and paper-accounting tests

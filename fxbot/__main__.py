@@ -25,6 +25,9 @@ def main(argv: list[str] | None = None) -> int:
     pr.add_argument("action", choices=["run", "status", "accounts", "check"])
     pr.add_argument("--strategy", choices=["trend", "ml"], default="trend")
     pr.add_argument("--dry-run", action="store_true", help="plan orders but don't send them")
+    sub.add_parser("gate", help="Score both strategies against the go-live gate -> results/GATE.md")
+    al = sub.add_parser("alert", help="Send an alert if today's run had problems")
+    al.add_argument("--outcomes", default="", help='e.g. "paper=success ml=failure practice=success"')
     sub.add_parser("signals", help="Print today's signal per pair (no trading)")
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
@@ -55,6 +58,13 @@ def main(argv: list[str] | None = None) -> int:
             print(ml_paper.status(state))
         else:
             print(ml_paper.report(cfg, state, Path(args.trend_state)))
+    elif args.cmd == "gate":
+        from .gate import report
+        print(report(cfg, ROOT))
+    elif args.cmd == "alert":
+        from .alerts import run as alert_run
+        outcomes = dict(kv.split("=", 1) for kv in args.outcomes.split() if "=" in kv)
+        alert_run(ROOT, outcomes)
     elif args.cmd == "practice":
         import os
         from . import practice

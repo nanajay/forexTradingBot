@@ -4,3 +4,4 @@ __pycache__/
 data/
 .env
 job.json
+results/.gate_changed
