@@ -1,0 +1,1 @@
+- 2026-11-14T15:49:01+00:00 signal 2026-11-13: equity $9,994.68 (-0.05%), gross 4.00x; 7 fill(s): sell 6,524 EUR/USD @ 1.1028; sell 5,324 GBP/USD @ 1.3209; buy 3,388 USD/JPY @ 159.686; sell 7,410 AUD/USD @ 0.6774; buy 7,479 USD/CAD @ 1.4269; buy 5,147 USD/CHF @ 0.8382; sell 8,581 NZD/USD @ 0.5525
