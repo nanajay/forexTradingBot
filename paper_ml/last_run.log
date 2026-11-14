@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/__main__.py", line 69, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/__main__.py", line 48, in main
+    out = ml_paper.run(cfg, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/ml_paper.py", line 150, in run
+    pred, sd, imp, n_train = train_and_predict(panel)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/ml_paper.py", line 98, in train_and_predict
+    m = M.make_model(MODEL_KIND)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/model.py", line 107, in make_model
+    return lgb.LGBMRegressor(n_estimators=300, learning_rate=0.02, num_leaves=8, min_child_samples=200,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/lightgbm/sklearn.py", line 1478, in __init__
+    super().__init__(
+  File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/lightgbm/sklearn.py", line 721, in __init__
+    raise LightGBMError(
+lightgbm.basic.LightGBMError: scikit-learn is required for lightgbm.sklearn. You must install scikit-learn and restart your session to use this module.
