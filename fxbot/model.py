@@ -21,7 +21,6 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from . import factors as F
 from .strategy import DAYS_PER_YEAR, rule_weights
 
 H = 5   # trading days in the prediction horizon (one week)

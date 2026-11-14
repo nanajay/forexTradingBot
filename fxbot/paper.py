@@ -25,7 +25,6 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Callable
 
-import pandas as pd
 
 from . import data as D
 from .config import pair_cost, pair_symbols
