@@ -1,8 +1,8 @@
 # Forex trend bot: paper report
 
-Updated 2026-11-14 16:57 UTC · signal day 2026-11-13 · **simulated: no real money**
+Updated 2026-11-14 17:03 UTC · signal day 2026-11-13 · **simulated: no real money**
 
-**Strategy:** the TradingBot BTC/ETH trend rules applied to 7 major USD pairs: 7 fixed
+**Strategy:** forex trend rules on 7 major USD pairs: 7 fixed
 signals per pair (price vs its 20/50/100/200-day averages, 30/90/180-day momentum), long/short,
 15% no-trade band, positions sized to a 10% volatility target.
 No learning model.
