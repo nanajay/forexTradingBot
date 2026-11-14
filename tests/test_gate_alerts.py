@@ -96,7 +96,7 @@ def test_alerts(tmp_path):
     try:
         # failed step -> PROBLEM title, high priority, both channels
         r = alerts.run(tmp_path, {"paper": "success", "ml": "failure"}, tue, post)
-        assert r["sent"] == ["ntfy", "webhook"] and "PROBLEM" in r["message"]
+        assert r["sent"] == ["ntfy", "webhook"] and "problem" in r["message"] and "⚠️ PROBLEMS" in r["body"]
         assert sent[0][0] == "https://ntfy.sh/t-test" and sent[0][1]["headers"]["Priority"] == "high"
         # mismatch in today's practice run is reported
         d = tmp_path / "practice_trend"
@@ -116,7 +116,8 @@ def test_daily_summary_shows_trades_day_change_and_total(tmp_path):
     import pandas as pd
     p = tmp_path / "paper"
     p.mkdir()
-    (p / "state.json").write_text(json.dumps({"initial_capital": 10_000.0}))
+    (p / "state.json").write_text(json.dumps({"initial_capital": 10_000.0,
+                                              "units": {"EUR/USD": 1234.5, "USD/JPY": 500.0}}))
     pd.DataFrame({"time": ["2026-11-16T00:30:00+00:00", "2026-11-17T00:30:00+00:00"],
                   "equity": [10_000.0, 10_100.0]}).to_csv(p / "equity.csv", index=False)
     pd.DataFrame({"time": ["2026-11-17T00:30:00+00:00"], "pair": ["EUR/USD"], "side": ["buy"],
@@ -129,9 +130,17 @@ def test_daily_summary_shows_trades_day_change_and_total(tmp_path):
     pd.DataFrame({"time": ["2026-11-17T00:31:00+00:00"] * 2, "pair": ["EUR/USD", "USD/JPY"],
                   "units": [5000, -3000], "status": ["filled", "rejected"], "price": [1.1, 150.0]}
                  ).to_csv(q / "fills.csv", index=False)
-    lines = "\n".join(alerts.daily_summary(tmp_path, datetime(2026, 11, 17, 0, 40, tzinfo=timezone.utc)))
-    assert "TREND paper: $10,100.00 · today +1.00% · total +1.00%" in lines
-    assert "buy 1,234 EUR/USD" in lines or "buy 1,235 EUR/USD" in lines
-    assert "TREND practice: £99,500.00 · today -0.50% · total -0.50%" in lines
-    assert "buy 5,000 EUR/USD @ 1.1" in lines and "USD/JPY" not in lines      # rejected orders aren't trades
-    assert "ML practice: not connected" in lines
+    now = datetime(2026, 11, 17, 0, 40, tzinfo=timezone.utc)
+    text = "\n".join(alerts.daily_summary(tmp_path, now))
+    assert "Paper (simulated): $10,100.00" in text and "🟢 +$100.00 today (+1.00%) · total +1.00%" in text
+    assert "OANDA practice: £99,500.00" in text and "🔴 −£500.00 today (−0.50%) · total −0.50%" in text
+    assert "Trades today: bought EUR/USD" in text
+    assert "Practice: same trades filled at OANDA ✅" in text          # the rejected USD/JPY isn't a trade
+    assert "Holding: ↑ EUR · ↓ JPY (vs USD)" in text                   # long USD/JPY = short JPY
+    assert "🤖 LEARNING MODEL" in text and "not started yet" in text
+    assert "GO-LIVE CHECK" in text
+    r = alerts.run(tmp_path, {"paper": "success"}, now, lambda *a, **k: None)
+    assert "1 problem(s)" in r["message"] and "rejected" in r["body"]     # the rejected order is flagged
+    (q / "fills.csv").write_text("time,pair,units,status,price\n")       # without it: a normal headline
+    r = alerts.run(tmp_path, {"paper": "success"}, now, lambda *a, **k: None)
+    assert "up 0.25% today" in r["message"]                              # avg of +1.00% and −0.50%

@@ -58,12 +58,50 @@ def gate_summary(root: Path) -> str:
 
 
 CURRENCY_SIGN = {"USD": "$", "GBP": "£", "EUR": "€"}
-MAX_TRADES_LISTED = 7
+STRATEGIES = (("trend", "📈 TREND STRATEGY", "paper", "practice_trend"),
+              ("ml", "🤖 LEARNING MODEL", "paper_ml", "practice_ml"))
 
 
-def _money(v: float, ccy: str) -> str:
+def _money(v: float, ccy: str, signed: bool = False) -> str:
     sign = CURRENCY_SIGN.get(ccy, "")
-    return f"{sign}{v:,.2f}" if sign else f"{v:,.2f} {ccy}"
+    s = f"{sign}{abs(v):,.2f}" if sign else f"{abs(v):,.2f} {ccy}"
+    if signed:
+        return ("+" if v >= 0 else "−") + s
+    return s
+
+
+def _pct(v: float) -> str:
+    return ("+" if v >= 0 else "−") + f"{abs(v):.2f}%"
+
+
+def holding_text(root: Path, paper_dir: str) -> str:
+    """What the strategy is betting on, per currency vs USD: '↑ JPY · ↓ EUR, GBP (vs USD)'."""
+    import json
+    f = root / paper_dir / "state.json"
+    if not f.exists():
+        return ""
+    units = json.loads(f.read_text()).get("units", {})
+    up, down = [], []
+    for pair, u in units.items():
+        if not u:
+            continue
+        base, quote = pair.split("/")
+        ccy, long_ccy = (base, u > 0) if quote == "USD" else (quote, u < 0)   # USD/JPY short = long JPY
+        (up if long_ccy else down).append(ccy)
+    if not up and not down:
+        return "  Holding: nothing (all cash)"
+    parts = []
+    if up:
+        parts.append("↑ " + ", ".join(sorted(up)))
+    if down:
+        parts.append("↓ " + ", ".join(sorted(down)))
+    return "  Holding: " + " · ".join(parts) + " (vs USD)"
+
+
+def _dot(pct: float | None) -> str:
+    if pct is None or abs(pct) < 0.005:
+        return "⚪"
+    return "🟢" if pct > 0 else "🔴"
 
 
 def _csv(path: Path):
@@ -71,73 +109,137 @@ def _csv(path: Path):
     return pd.read_csv(path) if path.exists() and path.stat().st_size > 0 else None
 
 
-def account_line(label: str, values, times, start_value: float, ccy: str, trades: list[str],
-                 today: str, note: str = "") -> str:
-    """'TREND paper: $9,994.68 · today -0.03% · total -0.05% · 2 trades: buy ...'"""
+def account_stats(values, times, start_value: float, ccy: str, today: str) -> dict | None:
+    """Current value, today's change (money and %) and total change since the start."""
     import pandas as pd
     if values is None or len(values) == 0:
-        return f"{label}: no data yet"
+        return None
     t = pd.to_datetime(pd.Series(times), utc=True).dt.strftime("%Y-%m-%d").to_numpy()
     v = pd.Series(values).astype(float).to_numpy()
-    now_v = v[-1]
     before = v[t < today]
-    day = f"today {(now_v / before[-1] - 1) * 100:+.2f}%" if len(before) else "today: first day"
-    total = f"total {(now_v / start_value - 1) * 100:+.2f}%"
-    if trades:
-        shown = trades[:MAX_TRADES_LISTED]
-        more = f" (+{len(trades) - len(shown)} more)" if len(trades) > len(shown) else ""
-        tr = f"{len(trades)} trade(s): " + "; ".join(shown) + more
+    prev = before[-1] if len(before) else None
+    return {"value": v[-1], "ccy": ccy, "start": start_value,
+            "day_abs": (v[-1] - prev) if prev is not None else None,
+            "day_pct": (v[-1] / prev - 1) * 100 if prev is not None else None,
+            "total_pct": (v[-1] / start_value - 1) * 100}
+
+
+def account_text(name: str, st: dict | None, missing: str) -> str:
+    if st is None:
+        return f"  {name}: {missing}"
+    if st["day_pct"] is None:
+        day = "first day"
     else:
-        tr = "no trades" + (f" ({note})" if note else "")
-    return f"{label}: {_money(now_v, ccy)} · {day} · {total}\n   {tr}"
+        day = f"{_money(st['day_abs'], st['ccy'], signed=True)} today ({_pct(st['day_pct'])})"
+    return (f"  {name}: {_money(st['value'], st['ccy'])}\n"
+            f"     {_dot(st['day_pct'])} {day} · total {_pct(st['total_pct'])}")
 
 
-def _fmt_units(u) -> str:
-    return f"{abs(float(u)):,.0f}"
+def trades_text(trades: list[tuple[str, str]]) -> str:
+    """[('buy','USD/JPY'), ('sell','EUR/USD')] -> 'bought USD/JPY · sold EUR/USD'"""
+    bought = sorted({p for s, p in trades if s == "buy"})
+    sold = sorted({p for s, p in trades if s == "sell"})
+    parts = []
+    if bought:
+        parts.append("bought " + ", ".join(bought))
+    if sold:
+        parts.append("sold " + ", ".join(sold))
+    return " · ".join(parts)
+
+
+def _paper(root: Path, d: str, today: str):
+    import json
+    st_f, eq = root / d / "state.json", _csv(root / d / "equity.csv")
+    if not st_f.exists() or eq is None:
+        return None, []
+    st = json.loads(st_f.read_text())
+    f = _csv(root / d / "fills.csv")
+    trades = [] if f is None else [(r["side"], r["pair"]) for _, r in
+                                   f[f["time"].astype(str).str.startswith(today)].iterrows()]
+    return account_stats(eq["equity"], eq["time"], float(st["initial_capital"]), "USD", today), trades
+
+
+def _practice(root: Path, d: str, today: str):
+    import json
+    st_f, eq = root / d / "state.json", _csv(root / d / "equity.csv")
+    if not st_f.exists() or eq is None:
+        return None, [], ""
+    st = json.loads(st_f.read_text())
+    f = _csv(root / d / "fills.csv")
+    trades = [] if f is None else [("buy" if float(r["units"]) > 0 else "sell", r["pair"]) for _, r in
+                                   f[f["time"].astype(str).str.startswith(today) & (f["status"] == "filled")].iterrows()]
+    runs = (root / d / "RUNS.md").read_text().splitlines() if (root / d / "RUNS.md").exists() else []
+    todays = [l for l in runs if today in l[:16]]
+    note = ""
+    if todays and "market closed" in todays[-1]:
+        note = "market closed"
+    elif todays and "not updated recently" in todays[-1]:
+        note = "waiting for the paper account"
+    return (account_stats(eq["nav"], eq["time"], float(st["start_nav"]), st.get("currency", "USD"), today),
+            trades, note)
+
+
+def strategy_block(root: Path, key: str, title: str, paper_dir: str, prac_dir: str, today: str) -> tuple[str, list]:
+    pst, ptr = _paper(root, paper_dir, today)
+    qst, qtr, note = _practice(root, prac_dir, today)
+    lines = [title,
+             account_text("Paper (simulated)", pst, "not started yet"),
+             account_text("OANDA practice", qst, "not connected yet")]
+    if not ptr and not qtr:
+        lines.append("  Trades today: none" + (f" (practice: {note})" if note else ""))
+    else:
+        if ptr:
+            lines.append(f"  Trades today: {trades_text(ptr)}")
+        if qst is not None:
+            if qtr and set(qtr) == set(ptr):
+                lines.append("  Practice: same trades filled at OANDA ✅")
+            elif qtr:
+                lines.append(f"  Practice trades: {trades_text(qtr)}")
+            else:
+                lines.append(f"  Practice: no trades ({note or 'nothing needed'})")
+    h = holding_text(root, paper_dir)
+    if h:
+        lines.append(h)
+    pcts = [x["day_pct"] for x in (pst, qst) if x and x["day_pct"] is not None]
+    return "\n".join(lines), pcts
+
+
+def gate_text(root: Path) -> str:
+    """'🚦 Go-live check: waiting · 3.0 of 26 weeks' per strategy, in plain words."""
+    try:
+        from .config import load_config
+        from .gate import evaluate, verdict
+        cfg = load_config(root / "config.toml") if (root / "config.toml").exists() else load_config()
+    except Exception:
+        return ""
+    words = {"WAIT": "⏳ waiting for data", "READY": "✅ READY for a small live trial", "NOT READY": "⛔ not ready"}
+    out = ["🚦 GO-LIVE CHECK"]
+    for key, name in (("trend", "Trend"), ("ml", "Learning model")):
+        try:                                   # a broken section must never stop the daily message
+            checks = evaluate(cfg, root, key)
+        except Exception as e:
+            out.append(f"  {name}: unavailable ({type(e).__name__})")
+            continue
+        dur = next((c.detail for c in checks if c.name == "duration"), "no practice data yet")
+        failed = [c.name for c in checks if c.status == "FAIL"]
+        extra = f" · failing: {', '.join(failed)}" if failed else ""
+        out.append(f"  {name}: {words[verdict(checks)]} ({dur}){extra}")
+    return "\n".join(out)
 
 
 def daily_summary(root: Path, now: datetime) -> list[str]:
-    """One block per account: today's trades, the day's change and the total value."""
-    import json
+    """Readable blocks for the phone: one per strategy, then the go-live check."""
     today = now.strftime("%Y-%m-%d")
-    lines = []
-    # paper accounts (USD)
-    for label, d in (("TREND paper", root / "paper"), ("ML paper", root / "paper_ml")):
-        st_f, eq = d / "state.json", _csv(d / "equity.csv")
-        if not st_f.exists() or eq is None:
-            lines.append(f"{label}: not started")
-            continue
-        st = json.loads(st_f.read_text())
-        f = _csv(d / "fills.csv")
-        trades = []
-        if f is not None:
-            for _, r in f[f["time"].astype(str).str.startswith(today)].iterrows():
-                trades.append(f"{r['side']} {_fmt_units(r['units'])} {r['pair']}")
-        lines.append(account_line(label, eq["equity"], eq["time"], float(st["initial_capital"]), "USD",
-                                  trades, today))
-    # OANDA practice accounts (account currency, e.g. GBP)
-    for label, d in (("TREND practice", root / "practice_trend"), ("ML practice", root / "practice_ml")):
-        st_f, eq = d / "state.json", _csv(d / "equity.csv")
-        if not st_f.exists() or eq is None:
-            lines.append(f"{label}: not connected")
-            continue
-        st = json.loads(st_f.read_text())
-        f = _csv(d / "fills.csv")
-        trades = []
-        if f is not None:
-            for _, r in f[f["time"].astype(str).str.startswith(today) & (f["status"] == "filled")].iterrows():
-                side = "buy" if float(r["units"]) > 0 else "sell"
-                trades.append(f"{side} {_fmt_units(r['units'])} {r['pair']} @ {r['price']}")
-        note = ""
-        runs = (d / "RUNS.md").read_text().splitlines() if (d / "RUNS.md").exists() else []
-        todays = [l for l in runs if today in l[:16]]
-        if todays and "market closed" in todays[-1]:
-            note = "market closed"
-        elif todays and "not updated recently" in todays[-1]:
-            note = "paper account stale"
-        lines.append(account_line(label, eq["nav"], eq["time"], float(st["start_nav"]),
-                                  st.get("currency", "USD"), trades, today, note))
-    return lines
+    blocks, pcts = [], []
+    for key, title, pd_, qd in STRATEGIES:
+        text, p = strategy_block(root, key, title, pd_, qd, today)
+        blocks.append(text)
+        pcts += p
+    g = gate_text(root)
+    if g:
+        blocks.append(g)
+    daily_summary.avg_day_pct = sum(pcts) / len(pcts) if pcts else None
+    return blocks
 
 
 def send(title: str, body: str, ntfy_topic: str | None = None, webhook: str | None = None,
@@ -158,27 +260,33 @@ def send(title: str, body: str, ntfy_topic: str | None = None, webhook: str | No
 
 
 def run(root: Path, outcomes: dict[str, str], now: datetime | None = None, post=requests.post) -> dict:
-    """Daily summary after every run: problems first (high priority), then each account's trades,
-    day change and total value, then the go-live gate."""
+    """Daily summary after every run: problems first (high priority), then each strategy's accounts
+    (value, today's change, total change, trades), then the go-live check."""
     now = now or datetime.now(timezone.utc)
     probs = problems_today(root, outcomes, now)
-    gate = gate_summary(root)
     flag = root / "results" / ".gate_changed"                # written by the gate step on a change
     parts = []
     if probs:
-        parts.append("PROBLEMS:\n" + "\n".join(f"- {p}" for p in probs))
-    parts.append("\n".join(daily_summary(root, now)))
+        parts.append("⚠️ PROBLEMS\n" + "\n".join(f"  • {p}" for p in probs))
     if flag.exists():
-        parts.append(f"GATE CHANGED: {flag.read_text()}")
-    elif gate:
-        parts.append(f"Gate: {gate}")
+        parts.append(f"🔔 GO-LIVE CHECK CHANGED\n  {flag.read_text()}")
+    parts += daily_summary(root, now)
+    parts.append("Details: results/GATE.md · paper*/REPORT.md · practice_*/RUNS.md")
     body = "\n\n".join(parts)
-    day = now.strftime("%a %d %b")
-    title = f"FX bot {day}: PROBLEM in today's run" if probs else \
-        (f"FX bot {day}: go-live gate changed" if flag.exists() else f"FX bot {day}: daily summary")
+    title = headline(now, probs, getattr(daily_summary, "avg_day_pct", None))
     try:
         sent = send(title, body, post=post, urgent=bool(probs))
     except Exception as e:                                   # never fail the workflow over an alert
         sent = [f"failed: {e}"]
     print(f"{title}\n{body}\nsent via: {sent or 'nothing configured (printed only)'}")
     return {"sent": sent, "problems": probs, "message": title, "body": body}
+
+
+def headline(now: datetime, probs: list[str], avg_day_pct: float | None) -> str:
+    day = now.strftime("%a %d %b")
+    if probs:
+        return f"⚠️ FX bot · {day} · {len(probs)} problem(s), please check"
+    if avg_day_pct is None:
+        return f"FX bot · {day} · daily summary"
+    word = "up" if avg_day_pct > 0.005 else "down" if avg_day_pct < -0.005 else "flat"
+    return f"FX bot · {day} · {_dot(avg_day_pct)} {word} {abs(avg_day_pct):.2f}% today (avg of accounts)"
