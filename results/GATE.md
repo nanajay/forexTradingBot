@@ -1,8 +1,8 @@
 # Go-live gate
 
-Updated 2026-11-14 16:58 UTC. A strategy is **READY** only when every check passes. **WAIT** means not enough data yet. Thresholds: `config.toml [gate]`. Even READY means only "eligible for a tiny live trial", never "safe".
+Updated 2026-11-14 17:01 UTC. A strategy is **READY** only when every check passes. **WAIT** means not enough data yet. Thresholds: `config.toml [gate]`. Even READY means only "eligible for a tiny live trial", never "safe".
 
-## Trend rules (crypto port): **WAIT**
+## Forex trend strategy: **WAIT**
 
 | Check | Status | Detail |
 |---|---|---|
@@ -13,7 +13,7 @@ Updated 2026-11-14 16:58 UTC. A strategy is **READY** only when every check pass
 | reliability | PASS | missed weekdays 0; mismatches 0; order problems 0; not halted |
 | drawdown | PASS | worst fall 0.0% (limit -20%) |
 
-## Learning model: **WAIT**
+## Forex learning model: **WAIT**
 
 | Check | Status | Detail |
 |---|---|---|

@@ -167,7 +167,7 @@ def verdict(checks: list[Check]) -> str:
 
 def report(cfg: dict, root: Path, now: datetime | None = None) -> str:
     now = now or datetime.now(timezone.utc)
-    names = {"trend": "Trend rules (crypto port)", "ml": "Learning model"}
+    names = {"trend": "Forex trend strategy", "ml": "Forex learning model"}
     parts = [f"# Go-live gate\n\nUpdated {now:%Y-%m-%d %H:%M UTC}. A strategy is **READY** only when every "
              "check passes. **WAIT** means not enough data yet. Thresholds: `config.toml [gate]`. "
              "Even READY means only \"eligible for a tiny live trial\", never \"safe\".\n"]
