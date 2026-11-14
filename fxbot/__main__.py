@@ -66,12 +66,12 @@ def main(argv: list[str] | None = None) -> int:
         from .alerts import run as alert_run, send
         if args.test:
             from datetime import datetime, timezone
-            from .alerts import daily_summary, gate_summary
+            from .alerts import daily_summary
             from .gate import report
             report(cfg, ROOT)
             now = datetime.now(timezone.utc)
-            body = "\n".join(daily_summary(ROOT, now)) + f"\n\nGate: {gate_summary(ROOT)}"
-            sent = send(f"FX bot TEST {now:%a %d %b}: daily summary format", body)
+            body = "\n\n".join(daily_summary(ROOT, now))
+            sent = send(f"FX bot TEST · {now:%a %d %b} · daily summary format", body)
             print(body)
             print(f"test alert sent via: {sent or 'nothing configured: set ALERT_NTFY_TOPIC or ALERT_WEBHOOK_URL'}")
             return 0 if sent else 1
