@@ -1,6 +1,6 @@
 # Forex learning model: paper report
 
-Updated 2026-11-14 16:34 UTC · week of 2026-11-13 · **simulated: no real money**
+Updated 2026-11-14 16:36 UTC · week of 2026-11-13 · **simulated: no real money**
 
 **Strategy:** LightGBM retrained every week on all past weeks (24 inputs per currency: momentum, trend, volatility,
 interest carry, risk sentiment). Long the 3 currencies predicted strongest for next week, short the 3 weakest, 10%

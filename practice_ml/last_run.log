@@ -15,4 +15,4 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/work/forexTradingBot/forexTradingBot/fxbot/oanda.py", line 59, in _req
     raise RuntimeError(f"OANDA {method} {shown} -> {r.status_code}: {r.text[:300]}")
-RuntimeError: OANDA GET /v3/accounts/<id>/summary -> 403: {"errorMessage":"The provided request was forbidden."}
+RuntimeError: OANDA GET /v3/accounts/<id>/summary -> 401: {"errorMessage":"Insufficient authorization to perform request."}
