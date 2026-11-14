@@ -41,9 +41,11 @@ jobs:
       - name: Learning-model paper run (retrains weekly after the Friday close)
         continue-on-error: true      # a model/data hiccup must not block the trend account's commit
         run: |
-          python -m fxbot ml run
-          python -m fxbot ml report > /dev/null
-          python -m fxbot ml status
+          mkdir -p paper_ml
+          set -o pipefail
+          # keep the output in the repo: a failure here is visible without opening the Actions logs
+          { python -m fxbot ml run && python -m fxbot ml report > /dev/null && python -m fxbot ml status; } \
+            2>&1 | tee paper_ml/last_run.log
       - name: Backtest
         if: ${{ inputs.backtest }}
         run: python -m fxbot backtest
