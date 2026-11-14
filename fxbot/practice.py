@@ -42,6 +42,17 @@ def _append_csv(path: Path, row: dict) -> None:
         w.writerow(row)
 
 
+def usd_per_unit(ccy: str, prices: dict[str, dict]) -> float:
+    """USD value of one unit of the account currency, from live OANDA mids."""
+    if ccy == "USD":
+        return 1.0
+    if f"{ccy}_USD" in prices:
+        return prices[f"{ccy}_USD"]["mid"]
+    if f"USD_{ccy}" in prices:
+        return 1.0 / prices[f"USD_{ccy}"]["mid"]
+    raise RuntimeError(f"account currency {ccy}: no {ccy}/USD price available to convert NAV")
+
+
 def paper_weights(state_dir: Path, pairs: list[str]) -> tuple[dict[str, float], dict[str, float], str]:
     """Signed weight (notional / equity) and mark price per pair from a paper account's state."""
     st = json.loads((state_dir / "state.json").read_text())
@@ -54,7 +65,7 @@ def paper_weights(state_dir: Path, pairs: list[str]) -> tuple[dict[str, float], 
 
 def plan_orders(weights: dict[str, float], marks: dict[str, float], nav: float, positions: dict[str, float],
                 prices: dict[str, dict], rails: dict) -> tuple[list[dict], list[dict]]:
-    """Return (orders, skipped). Pure function: no I/O, so it is unit-tested directly."""
+    """Return (orders, skipped). `nav` is in USD. Pure function: no I/O, so it is unit-tested directly."""
     orders, skipped = [], []
     gross = sum(abs(v) for v in weights.values())
     if gross > rails["max_gross"]:
@@ -107,10 +118,13 @@ def run(cfg: dict, strategy: str, paper_dir: Path, out_dir: Path, account: str,
     summ = client.summary(account)
     nav = float(summ["NAV"])
     if not st:
-        st = {"strategy": strategy, "account": account[-4:], "started": stamp, "start_nav": nav, "halted": False}
+        st = {"strategy": strategy, "account": account[-4:], "currency": summ.get("currency", "USD"),
+              "started": stamp, "start_nav": nav, "halted": False}
     positions = client.positions(account)
     prices = client.pricing(account, [instrument(p) for p in pairs])
     weights, marks, paper_last = paper_weights(paper_dir, pairs)
+    ccy = summ.get("currency", "USD")
+    nav_usd = nav * usd_per_unit(ccy, prices)              # e.g. a GBP account: NAV x GBP/USD
 
     orders, skipped, fills = [], [], []
     reason = None
@@ -122,7 +136,7 @@ def run(cfg: dict, strategy: str, paper_dir: Path, out_dir: Path, account: str,
     elif not paper_last or (now - datetime.fromisoformat(paper_last)).total_seconds() / 3600 > rails["max_state_age_hours"]:
         reason = f"paper account not updated recently (last run {paper_last or 'never'})"
     else:
-        orders, skipped = plan_orders(weights, marks, nav, positions, prices, rails)
+        orders, skipped = plan_orders(weights, marks, nav_usd, positions, prices, rails)
 
     for o in orders:
         row = {"time": stamp, "pair": o["pair"], "units": o["units"], "target": o["target"],
@@ -160,9 +174,10 @@ def run(cfg: dict, strategy: str, paper_dir: Path, out_dir: Path, account: str,
                 mismatches.append({"pair": o["pair"], "target": o["target"], "held": held})
         summ = client.summary(account)
         nav = float(summ["NAV"])
+        nav_usd = nav * usd_per_unit(ccy, prices)
         positions = after
     gross = sum(abs(notional_usd(p, positions.get(instrument(p), 0.0), prices[instrument(p)]["mid"]))
-                for p in pairs if instrument(p) in prices) / nav if nav else 0.0
+                for p in pairs if instrument(p) in prices) / nav_usd if nav_usd else 0.0
     _append_csv(out_dir / "equity.csv", {
         "time": stamp, "nav": round(nav, 2), "balance": round(float(summ.get("balance", 0)), 2),
         "unrealized_pl": round(float(summ.get("unrealizedPL", 0)), 2),
@@ -171,7 +186,7 @@ def run(cfg: dict, strategy: str, paper_dir: Path, out_dir: Path, account: str,
         "orders": len(orders), "filled": sum(f.get("status") == "filled" for f in fills)})
     st["last_run"] = stamp
     st_file.write_text(json.dumps(st, indent=1))
-    line = (f"- {stamp} [{strategy}{' dry-run' if dry_run else ''}] NAV ${nav:,.2f} "
+    line = (f"- {stamp} [{strategy}{' dry-run' if dry_run else ''}] NAV {nav:,.2f} {ccy} "
             f"({(nav / st['start_nav'] - 1) * 100:+.2f}% since {st['started'][:10]}), gross {gross:.2f}x; "
             + (reason if reason else f"{len(orders)} order(s), "
                f"{sum(f.get('status') == 'filled' for f in fills)} filled")
@@ -190,9 +205,10 @@ def status(out_dir: Path, cfg: dict) -> str:
     eq = pd.read_csv(out_dir / "equity.csv")
     last = eq.iloc[-1]
     lines = [f"OANDA PRACTICE [{st['strategy']}] account …{st['account']} since {st['started']}"
-             f" (start NAV ${st['start_nav']:,.2f}){' HALTED' if st.get('halted') else ''}",
-             f"NAV ${last.nav:,.2f} ({(last.nav / st['start_nav'] - 1) * 100:+.2f}%), "
-             f"financing so far ${last.financing_total:,.2f}, gross {last.gross_leverage:.2f}x"]
+             f" (start NAV {st['start_nav']:,.2f} {st.get('currency', 'USD')})"
+             f"{' HALTED' if st.get('halted') else ''}",
+             f"NAV {last.nav:,.2f} ({(last.nav / st['start_nav'] - 1) * 100:+.2f}%), "
+             f"financing so far {last.financing_total:,.2f}, gross {last.gross_leverage:.2f}x"]
     if (out_dir / "fills.csv").exists():
         f = pd.read_csv(out_dir / "fills.csv")
         ok = f[f.status == "filled"]

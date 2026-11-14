@@ -114,3 +114,25 @@ def test_errors_hide_account_ids(monkeypatch):
     with pytest.raises(RuntimeError) as e:
         c.summary("101-001-5727429-001")
     assert "5727429" not in str(e.value) and "<id>" in str(e.value)
+
+
+def test_gbp_account_nav_converted_to_usd(tmp_path):
+    cfg = load_config()
+    cfg["pairs"] = {p: cfg["pairs"][p] for p in ["EUR/USD", "GBP/USD"]}
+    now = datetime(2026, 11, 16, 0, 30, tzinfo=timezone.utc)
+    d = tmp_path / "paper"
+    d.mkdir()
+    (d / "state.json").write_text(json.dumps({
+        "balance": 100_000.0, "units": {"EUR/USD": 50_000 / 1.10, "GBP/USD": 0.0},
+        "mark": {"EUR/USD": 1.10, "GBP/USD": 1.30}, "last_run": now.isoformat(timespec="seconds")}))
+
+    class GBPFake(FakeOanda):
+        def summary(self, a):
+            return {**super().summary(a), "currency": "GBP"}
+
+        def pricing(self, a, insts):
+            return {"EUR_USD": px(1.10), "GBP_USD": px(1.30)}
+    fake = GBPFake(nav=100_000.0)                          # £100,000 = $130,000
+    out = practice.run(cfg, "trend", d, tmp_path / "out", "101-004-1-001", fake, now)
+    eur = [o for o in out["orders"] if o["pair"] == "EUR/USD"][0]
+    assert eur["units"] == round(0.5 * 130_000 / 1.10)     # 50% of the USD value of the GBP NAV
