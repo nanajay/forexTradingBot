@@ -1,4 +1,4 @@
-# Forex backtest: TradingBot trend "blend" on FX majors
+# Forex backtest: trend "blend" strategy on the 7 major currency pairs
 
 `python -m fxbot backtest`. Daily Yahoo Finance closes for EUR/USD, GBP/USD, USD/JPY, AUD/USD, USD/CAD, USD/CHF, NZD/USD, 2004-01-01 to 2026-11-13
 (one-day bad ticks that revert the next day are removed). The position decided at day t's close earns day t+1's
@@ -7,7 +7,7 @@ return. Each trade pays half the pair's spread (EUR/USD 1.0, GBP/USD 1.5, USD/JP
 No-trade band 15% of the signal range. Each pair targets
 10%/sqrt(N) volatility, fixed when its signal changes
 (caps: 2.0x per pair, 4.0x gross).
-The rule parameters are the crypto bot's (20/50/100/200-day SMA, 30/90/180-day momentum) and were **not tuned** on FX.
+The forex trend rules use fixed parameters (20/50/100/200-day SMA, 30/90/180-day momentum), first used in the TradingBot crypto project, and were **not tuned** on forex data.
 
 ## Verdict
 
@@ -31,7 +31,7 @@ The strategy does **not** carry over to FX in its configured `long_short` mode: 
 | long_only | no costs | second half | -3.1% | -32.2% | -0.35 | 8.0% | -10.0% | 0.00% |
 
 `long_short`: each rule votes +1/-1, so the bot can be short a pair (natural for FX). `long_only`: each rule votes
-1/0 exactly like the crypto bot, so a pair is held long or flat.
+1/0, so a pair is held long or flat (the original long-only design).
 
 ## Robustness: single rules (long_short, after costs)
 
@@ -61,6 +61,6 @@ The strategy does **not** carry over to FX in its configured `long_short` mode: 
 ## Caveats
 * Yahoo's daily FX closes are composite quotes, not a broker's prices. Spreads and financing are flat
   assumptions; real swap rates vary by pair, direction and interest-rate regime (positive carry is ignored).
-* Weights are treated as a constant fraction of equity between signal changes (same approximation as the crypto
-  backtest).
+* Weights are treated as a constant fraction of equity between signal changes (a standard backtest
+  approximation).
 * Past performance does not guarantee future results.

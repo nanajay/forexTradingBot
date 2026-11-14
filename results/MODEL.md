@@ -10,7 +10,7 @@ on shuffled (meaningless) labels**. Don't trade it.
    the S&P 500.
 2. **Features:** 24 per currency, taken at each Friday's close and using past data only:
    * momentum over 1/4/12/24/50 weeks, scaled by volatility;
-   * distance from the 50- and 200-day averages, RSI-14, the crypto bot's 7-rule trend blend;
+   * distance from the 50- and 200-day averages, RSI-14, the forex trend strategy's 7-rule blend;
    * volatility level and 20/60-day volatility ratio;
    * interest carry and its 3- and 6-month change, plus cross-sectional ranks of momentum and carry;
    * broad USD move, VIX level and 4-week change, S&P 500 1- and 4-week return, carry × VIX change.

@@ -1,8 +1,9 @@
 # Forex Trend Bot
 
-A port of the [TradingBot](https://github.com/nanajay/TradingBot) BTC/ETH trend strategy to the seven major
-USD currency pairs, with a daily **paper-trading** account run by GitHub Actions. Simulated money only: there is
-no broker connection in this repo.
+A forex trading bot for the seven major USD currency pairs. It runs two strategies, a **forex trend strategy**
+and a **forex learning model**, each on a simulated paper account and an OANDA **practice** (demo-money) account,
+every weekday via GitHub Actions. There is no real-money trading: the broker client can only reach OANDA's
+practice server.
 
 > **Read this first: the strategy has not worked on FX since 2015.** Backtested on daily closes from 2004 to
 > 2026, it made about +4% a year from 2004 to 2014 and lost about −7% a year from 2015 to 2026 after costs
@@ -11,7 +12,7 @@ no broker connection in this repo.
 > tested ([results/RESEARCH.md](results/RESEARCH.md)): none made money out of sample. The paper account is here to watch it live,
 > not as a reason to fund it.
 
-## The strategy (same rules as the crypto bot)
+## The forex trend strategy
 * **Signals:** on each pair's daily close, 7 fixed on/off rules: price above its 20/50/100/200-day simple
   moving average, and 30/90/180-day return above zero. The **blend** is their average.
 * **Direction:** `long_short` (default): each rule votes +1 or −1, so the blend runs from −1 (fully short) to +1

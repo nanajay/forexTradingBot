@@ -1,13 +1,13 @@
 # Refining the FX strategy: what was tried and what held up (2026-11-14)
 
-**Short answer: nothing tried here is worth trading.** The crypto trend rules fail on FX majors after 2014.
+**Short answer: nothing tried here is worth trading.** The forex trend strategy fails on the major currency pairs after 2014.
 None of the standard FX alternatives (carry, cross-sectional momentum, value) or their mixes made money
 from 2015 to 2026 after realistic costs. The live paper bot is unchanged.
 
 ## Method (fixed before looking at results)
 * Universe: the 8 major currencies (USD, EUR, GBP, JPY, AUD, CAD, CHF, NZD), traded through the 7 USD pairs.
 * Candidates from the FX research literature, all with standard parameters. Nothing was tuned:
-  * **trend:** the crypto bot's 7-rule blend per currency vs USD (long/short).
+  * **trend:** the forex trend strategy's 7-rule blend per currency vs USD (long/short).
   * **carry:** long the 3 highest-yielding currencies, short the 3 lowest (USD included in the ranking).
   * **momentum:** the same ranking on 12-month return.
   * **value:** the same ranking on minus the 5-year return (a price-only stand-in for purchasing-power value).
@@ -25,7 +25,7 @@ from 2015 to 2026 after realistic costs. The live paper bot is unchanged.
 
 | Strategy | Sharpe 2004–14 | CAGR 2004–14 | Sharpe 2015–26 | CAGR 2015–26 | Max DD 2015–26 |
 |---|---:|---:|---:|---:|---:|
-| trend (crypto rules) | 0.23 | +2.0% | −0.27 | −3.5% | −37% |
+| forex trend strategy | 0.23 | +2.0% | −0.27 | −3.5% | −37% |
 | carry | 0.09 | +0.4% | 0.00 | −0.5% | −34% |
 | momentum 12m | −0.07 | −1.1% | −0.28 | −3.6% | −35% |
 | value (5y reversal) | 0.05 | +0.1% | −0.17 | −2.5% | −36% |
@@ -51,7 +51,7 @@ The rule picks "all four", the best mix on 2004–2014. It lost money out of sam
 * These findings match published work: G10 FX trend, momentum and carry all had a weak decade after 2014.
 
 ## What this means
-* **Don't fund any of these.** The paper bot keeps tracking the original crypto-rules port so you can watch it live.
+* **Don't fund any of these.** The paper and practice accounts keep tracking the forex trend strategy and the forex learning model live.
 * More rule tweaks on the same data would just fit 2015–2026 noise. That period is the test, so it can't also
   be used for tuning.
 * Things that could change the picture, each its own project and each needing new data:

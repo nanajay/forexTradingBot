@@ -60,7 +60,7 @@ def paper_report(cfg: dict, state_dir: Path) -> str:
 
 Updated {now} · signal day {last.signal_day} · **simulated: no real money**
 
-**Strategy:** the TradingBot BTC/ETH trend rules applied to {len(cfg['pairs'])} major USD pairs: 7 fixed
+**Strategy:** forex trend rules on {len(cfg['pairs'])} major USD pairs: 7 fixed
 signals per pair (price vs its 20/50/100/200-day averages, 30/90/180-day momentum), {mode},
 {cfg['strategy']['band']:.0%} no-trade band, positions sized to a {cfg['sizing']['vol_target']:.0%} volatility target.
 No learning model.
@@ -169,7 +169,7 @@ def backtest_report(closes: pd.DataFrame, cfg: dict, out_dir: Path) -> str:
         verdict = (f"Profitable after costs from {split[:4]} to {end[:4]} ({second[(mode, 'after costs')]:+.1f}% a "
                    f"year). Check the drawdowns and the robustness grid before trusting it.")
     c = cfg["costs"]
-    md = f"""# Forex backtest: TradingBot trend "blend" on FX majors
+    md = f"""# Forex backtest: trend "blend" strategy on the 7 major currency pairs
 
 `python -m fxbot backtest`. Daily Yahoo Finance closes for {', '.join(cfg['pairs'])}, {start} to {end}
 (one-day bad ticks that revert the next day are removed). The position decided at day t's close earns day t+1's
@@ -178,7 +178,7 @@ return. Each trade pays half the pair's spread ({', '.join(f'{p} {v[1]}' for p, 
 No-trade band {cfg['strategy']['band']:.0%} of the signal range. Each pair targets
 {cfg['sizing']['vol_target']:.0%}/sqrt(N) volatility, fixed when its signal changes
 (caps: {cfg['sizing']['max_pair_leverage']}x per pair, {cfg['sizing']['max_gross_leverage']}x gross).
-The rule parameters are the crypto bot's (20/50/100/200-day SMA, 30/90/180-day momentum) and were **not tuned** on FX.
+The forex trend rules use fixed parameters (20/50/100/200-day SMA, 30/90/180-day momentum), first used in the TradingBot crypto project, and were **not tuned** on forex data.
 
 ## Verdict
 
@@ -191,7 +191,7 @@ The rule parameters are the crypto bot's (20/50/100/200-day SMA, 30/90/180-day m
 {chr(10).join(lines)}
 
 `long_short`: each rule votes +1/-1, so the bot can be short a pair (natural for FX). `long_only`: each rule votes
-1/0 exactly like the crypto bot, so a pair is held long or flat.
+1/0, so a pair is held long or flat (the original long-only design).
 
 ## Robustness: single rules (long_short, after costs)
 
@@ -208,8 +208,8 @@ The rule parameters are the crypto bot's (20/50/100/200-day SMA, 30/90/180-day m
 ## Caveats
 * Yahoo's daily FX closes are composite quotes, not a broker's prices. Spreads and financing are flat
   assumptions; real swap rates vary by pair, direction and interest-rate regime (positive carry is ignored).
-* Weights are treated as a constant fraction of equity between signal changes (same approximation as the crypto
-  backtest).
+* Weights are treated as a constant fraction of equity between signal changes (a standard backtest
+  approximation).
 * Past performance does not guarantee future results.
 """
     (out_dir / "BACKTEST.md").write_text(md)
