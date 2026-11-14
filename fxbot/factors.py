@@ -63,8 +63,10 @@ def weekly(df: pd.DataFrame) -> pd.DataFrame:
     """Hold Friday's (last trading day of the week) value until the next one."""
     idx = df.index.tz_localize(None) if df.index.tz is not None else df.index
     wk = pd.Series(idx.to_period("W-FRI"), index=df.index)
-    last = wk != wk.shift(-1)
-    return df.where(last, np.nan).ffill()
+    last = (wk != wk.shift(-1)).to_numpy().copy()
+    if len(df) and df.index[-1].dayofweek != 4:     # current week not finished yet
+        last[-1] = False
+    return df.where(pd.Series(last, index=df.index), np.nan).ffill()
 
 
 def vol_target(expo: pd.DataFrame, rets: pd.DataFrame, target: float, lookback: int = 120,

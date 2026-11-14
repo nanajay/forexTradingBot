@@ -37,7 +37,11 @@ def _rsi(c: pd.Series, n: int = 14) -> pd.Series:
 def fridays(index: pd.DatetimeIndex) -> pd.DatetimeIndex:
     idx = index.tz_localize(None) if index.tz is not None else index
     wk = pd.Series(idx.to_period("W-FRI"), index=index)
-    return index[(wk != wk.shift(-1)).to_numpy()]
+    last_of_week = (wk != wk.shift(-1)).to_numpy().copy()
+    # the final row only ends a week if it IS a Friday (otherwise that week is still running)
+    if len(index) and index[-1].dayofweek != 4:
+        last_of_week[-1] = False
+    return index[last_of_week]
 
 
 def build_panel(px: pd.DataFrame, diff: pd.DataFrame, vix: pd.Series, spx: pd.Series) -> pd.DataFrame:

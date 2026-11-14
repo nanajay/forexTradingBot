@@ -1,4 +1,5 @@
-# Daily FX paper trading on GitHub's servers. Simulated money only: there is no broker
+# Daily FX paper trading on GitHub's servers: the trend account (paper/) and the
+# learning-model account (paper_ml/). Simulated money only: there is no broker
 # connection in this repo, so this workflow cannot place real orders.
 name: Daily FX paper trading
 
@@ -37,6 +38,12 @@ jobs:
           python -m fxbot paper run
           python -m fxbot paper report > /dev/null
           python -m fxbot paper status
+      - name: Learning-model paper run (retrains weekly after the Friday close)
+        continue-on-error: true      # a model/data hiccup must not block the trend account's commit
+        run: |
+          python -m fxbot ml run
+          python -m fxbot ml report > /dev/null
+          python -m fxbot ml status
       - name: Backtest
         if: ${{ inputs.backtest }}
         run: python -m fxbot backtest
@@ -44,7 +51,7 @@ jobs:
         run: |
           git config user.name "fxbot (GitHub Actions)"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add paper results
+          git add paper paper_ml results
           if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
           git commit -m "Paper trading run $(date -u +%F)"
           for i in 1 2 3 4; do

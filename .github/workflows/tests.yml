@@ -1,7 +1,7 @@
 name: Tests
 on:
   push:
-    paths-ignore: ["paper/**"]
+    paths-ignore: ["paper/**", "paper_ml/**"]
   pull_request:
 jobs:
   test:

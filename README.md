@@ -36,6 +36,14 @@ Volatility sizing is needed because a currency pair moves roughly a tenth as muc
 would be near zero either way. Each pair's size is set when its signal changes and then held, so it doesn't
 churn daily.
 
+## Learning-model paper account
+A second simulated account runs the walk-forward ML model from [results/MODEL.md](results/MODEL.md) live.
+It retrains every week, after the Friday close, on 24 inputs per currency. Then it goes long the 3 currencies
+predicted strongest and short the 3 weakest (dollar-neutral, 10% volatility target). Every prediction is logged
+to `paper_ml/predictions.csv` and scored once its week ends, so you can compare the live accuracy with the
+backtest. The backtest showed no edge, so judge it only after ~26 scored weeks. `paper_ml/REPORT.md` also
+shows the trend account over the same period. Unlike the trend account, it books interest carry.
+
 ## Setup
 ```bash
 pip install -r requirements.txt
@@ -50,6 +58,7 @@ python -m pytest -q
 | `python -m fxbot paper run` | One daily paper step: mark, charge financing, trade on a new signal day. Safe to re-run |
 | `python -m fxbot paper status` | Account summary and positions |
 | `python -m fxbot paper report` | Writes `paper/REPORT.md` and an equity chart |
+| `python -m fxbot ml run` / `status` / `report` | **Learning-model paper account** (`paper_ml/`): retrains LightGBM every week on all past weeks, trades long 3 / short 3 currencies, logs and scores every prediction live |
 
 Settings (pairs, spreads, mode, band, volatility target, leverage caps) are in `config.toml`.
 
@@ -66,6 +75,8 @@ fxbot/strategy.py  rules, blend, band, vol sizing, backtest, performance stats
 fxbot/paper.py     paper account (multi-currency P&L in USD, financing, cost model)
 fxbot/report.py    paper/REPORT.md + SVG chart, results/BACKTEST.md
 fxbot/factors.py   research: carry / momentum / value / trend sleeves with interest carry
+fxbot/model.py     learning model: features, walk-forward training, predictions
+fxbot/ml_paper.py  learning-model paper account (weekly retrain, live scorecard)
 fxbot/rates.py     research: FRED short-term rates per currency (lagged, no lookahead)
 research/          scripts behind results/RESEARCH.md
 tests/             no-lookahead, band, data-cleaning and paper-accounting tests

@@ -17,6 +17,10 @@ def main(argv: list[str] | None = None) -> int:
     pp = sub.add_parser("paper", help="Paper account")
     pp.add_argument("action", choices=["run", "status", "report"])
     pp.add_argument("--state", default=str(ROOT / "paper"))
+    mp = sub.add_parser("ml", help="Learning-model paper account (weekly retrain)")
+    mp.add_argument("action", choices=["run", "status", "report"])
+    mp.add_argument("--state", default=str(ROOT / "paper_ml"))
+    mp.add_argument("--trend-state", default=str(ROOT / "paper"))
     sub.add_parser("signals", help="Print today's signal per pair (no trading)")
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
@@ -37,6 +41,16 @@ def main(argv: list[str] | None = None) -> int:
         for p in closes:
             w = rule_weights(closes[p].dropna(), "blend", st["mode"], tuple(st["sma"]), tuple(st["mom"]))
             print(f"  {p}: {w.iloc[-1]:+.2f}")
+    elif args.cmd == "ml":
+        from . import ml_paper
+        state = Path(args.state)
+        if args.action == "run":
+            out = ml_paper.run(cfg, state)
+            print(json.dumps(out, indent=1, default=str))
+        elif args.action == "status":
+            print(ml_paper.status(state))
+        else:
+            print(ml_paper.report(cfg, state, Path(args.trend_state)))
     elif args.cmd == "paper":
         from . import paper
         state = Path(args.state)
