@@ -72,6 +72,10 @@ jobs:
         if: always()
         continue-on-error: true
         run: python -m fxbot gate > /dev/null && sed -n '/^## /p' results/GATE.md
+      - name: Report pages (REPORT.md, paper/REPORT.md, paper_ml/REPORT.md)
+        if: always()
+        continue-on-error: true
+        run: python -m fxbot pages > /dev/null
       - name: Backtest
         if: ${{ inputs.backtest }}
         run: python -m fxbot backtest
@@ -81,7 +85,7 @@ jobs:
         run: |
           git config user.name "fxbot (GitHub Actions)"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add paper paper_ml results
+          git add paper paper_ml results REPORT.md
           git add practice_trend practice_ml practice_check.log 2>/dev/null || true
           if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
           git commit -m "Paper trading run $(date -u +%F)"

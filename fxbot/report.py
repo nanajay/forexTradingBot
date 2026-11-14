@@ -1,98 +1,12 @@
-"""Readable reports: paper/REPORT.md (+ equity SVG) and results/BACKTEST.md."""
+"""results/BACKTEST.md (the report pages are built by fxbot/pages.py)."""
 from __future__ import annotations
 
 import copy
-from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 
 from . import strategy as S
-from .paper import State
-
-
-def svg_line(series: pd.Series, title: str, width: int = 720, height: int = 260) -> str:
-    """Tiny dependency-free SVG line chart of a % series."""
-    pad_l, pad_r, pad_t, pad_b = 56, 16, 28, 32
-    y = series.astype(float).to_numpy()
-    lo, hi = min(y.min(), 0.0), max(y.max(), 0.0)
-    if hi - lo < 1e-9:
-        lo, hi = lo - 1, hi + 1
-    n = len(y)
-    def X(i): return pad_l + (width - pad_l - pad_r) * (i / max(n - 1, 1))
-    def Y(v): return pad_t + (height - pad_t - pad_b) * (1 - (v - lo) / (hi - lo))
-    pts = " ".join(f"{X(i):.1f},{Y(v):.1f}" for i, v in enumerate(y))
-    ticks = "".join(
-        f'<line x1="{pad_l}" x2="{width - pad_r}" y1="{Y(v):.1f}" y2="{Y(v):.1f}" stroke="#ccc" stroke-width="0.5"/>'
-        f'<text x="{pad_l - 6}" y="{Y(v) + 4:.1f}" font-size="11" text-anchor="end" fill="#666">{v:+.1f}%</text>'
-        for v in [lo, (lo + hi) / 2, hi])
-    labels = (f'<text x="{pad_l}" y="{height - 10}" font-size="11" fill="#666">{series.index[0]}</text>'
-              f'<text x="{width - pad_r}" y="{height - 10}" font-size="11" text-anchor="end" fill="#666">'
-              f'{series.index[-1]}</text>')
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-            f'viewBox="0 0 {width} {height}"><rect width="100%" height="100%" fill="#fff"/>'
-            f'<text x="{pad_l}" y="18" font-size="13" fill="#222">{title}</text>{ticks}'
-            f'<line x1="{pad_l}" x2="{width - pad_r}" y1="{Y(0):.1f}" y2="{Y(0):.1f}" stroke="#888"/>'
-            f'<polyline fill="none" stroke="#2563eb" stroke-width="2" points="{pts}"/>{labels}</svg>')
-
-
-def paper_report(cfg: dict, state_dir: Path) -> str:
-    st = State.load(state_dir)
-    if not st or not (state_dir / "equity.csv").exists():
-        return "No paper account yet."
-    eq = pd.read_csv(state_dir / "equity.csv")
-    last = eq.iloc[-1]
-    chg = (st.balance / st.initial_capital - 1) * 100
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    mode = cfg["strategy"]["mode"].replace("_", "/")
-    rows = []
-    for p in cfg["pairs"]:
-        k = p.replace("/", "")
-        u = st.units.get(p, 0.0)
-        side = "long" if u > 0 else "short" if u < 0 else "flat"
-        rows.append(f"| {p} | {last[f'{k}_px']:.5g} | {st.signal.get(p, 0):+.2f} | {side} | "
-                    f"{last[f'{k}_w']:+.2f}x |")
-    pct = (eq.set_index("signal_day")["equity"] / st.initial_capital - 1) * 100
-    (state_dir / "report_equity.svg").write_text(svg_line(pct, "Paper account, % change since start"))
-    table = "\n".join(f"| {d} | ${e:,.2f} | {v:+.2f}% |"
-                      for d, e, v in zip(eq.signal_day, eq.equity, pct))
-    md = f"""# Forex trend bot: paper report
-
-Updated {now} · signal day {last.signal_day} · **simulated: no real money**
-
-**Strategy:** forex trend rules on {len(cfg['pairs'])} major USD pairs: 7 fixed
-signals per pair (price vs its 20/50/100/200-day averages, 30/90/180-day momentum), {mode},
-{cfg['strategy']['band']:.0%} no-trade band, positions sized to a {cfg['sizing']['vol_target']:.0%} volatility target.
-No learning model.
-
-> **Backtest warning:** after costs this strategy lost money on FX from 2015 to 2026 (see
-> [results/BACKTEST.md](../results/BACKTEST.md)). This paper account tracks it live; it is not a
-> recommendation to trade it.
-
-| | |
-|---|---|
-| Account value | **${st.balance:,.2f}** |
-| Change since start ({st.started[:10]}) | {chg:+.2f}% |
-| Gross leverage | {last.gross_leverage:.2f}x |
-| Trading costs paid | ${st.costs_paid:,.2f} |
-| Financing paid | ${st.financing_paid:,.2f} |
-
-## Positions
-
-| Pair | Price | Signal (-1..+1) | Side | Size (x equity) |
-|---|---:|---:|---|---:|
-{chr(10).join(rows)}
-
-## Account
-
-![Paper account, % change since start](report_equity.svg)
-
-| Signal day | Equity | Change |
-|---|---:|---:|
-{table}
-"""
-    (state_dir / "REPORT.md").write_text(md)
-    return md
 
 
 def _fmt(p: dict) -> str:

@@ -5,6 +5,9 @@ and a **forex learning model**, each on a simulated paper account and an OANDA *
 every weekday via GitHub Actions. There is no real-money trading: the broker client can only reach OANDA's
 practice server.
 
+**📊 Live status: [REPORT.md](REPORT.md)**: both strategies at a glance, today's trades and the go-live check
+(updated every weekday). Strategy pages: [📈 trend](paper/REPORT.md) · [🤖 learning model](paper_ml/REPORT.md).
+
 > **Read this first: the strategy has not worked on FX since 2015.** Backtested on daily closes from 2004 to
 > 2026, it made about +4% a year from 2004 to 2014 and lost about −7% a year from 2015 to 2026 after costs
 > (−5% a year **before** costs). Every single rule loses over 2015–2026, so this isn't one unlucky parameter.
