@@ -1,0 +1,8 @@
+time,pair,units,target,mid_before,spread_bps,status,price,slippage_vs_mid_bps,half_spread_cost,financing,pl,reason
+2026-11-16T07:10:39+00:00,EUR/USD,-86011,-86011,1.10172,0.54,filled,1.10169,0.27,1.9544,0.0,0.0,
+2026-11-16T07:10:39+00:00,GBP/USD,-70174,-70174,1.32029,0.91,filled,1.32024,0.38,2.9233,0.0,0.0,
+2026-11-16T07:10:39+00:00,USD/JPY,44651,44651,159.551,1.0,error,,,,,,"OANDA POST /v3/accounts/<id>/orders -> 401: {""errorMessage"":""Insufficient authorization to perform request.""}"
+2026-11-16T07:10:39+00:00,AUD/USD,-97715,-97715,0.675995,1.92,filled,0.67594,0.81,5.1809,0.0,0.0,
+2026-11-16T07:10:39+00:00,USD/CAD,98576,98576,1.4277449999999998,1.19,filled,1.42781,0.46,4.7068,0.0,0.0,
+2026-11-16T07:10:39+00:00,USD/CHF,67838,67838,0.839305,1.79,filled,0.83943,1.49,4.5913,0.0,0.0,
+2026-11-16T07:10:39+00:00,NZD/USD,-113144,-113144,0.5522100000000001,2.17,error,,,,,,"OANDA POST /v3/accounts/<id>/orders -> 401: {""errorMessage"":""Insufficient authorization to perform request.""}"

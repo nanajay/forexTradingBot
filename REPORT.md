@@ -1,23 +1,23 @@
 # FX bot overview
 
-Updated Sat 14 Nov 2026, 17:34 UTC · **practice and simulated money only, no real trades**
+Updated Mon 16 Nov 2026, 07:11 UTC · **practice and simulated money only, no real trades**
 
 | Strategy | Account | Value | Today | Since start |
 |---|---|---:|---|---|
-| [📈 Forex trend strategy](paper/REPORT.md) | Paper (simulated) | **$9,994.68** | ⚪ first day | 🔴 −0.05% |
-|  | OANDA practice | **£100,000.00** | ⚪ first day | ⚪ +0.00% |
-| [🤖 Forex learning model](paper_ml/REPORT.md) | Paper (simulated) | **$9,994.68** | ⚪ first day | 🔴 −0.05% |
-|  | OANDA practice | **£100,000.00** | ⚪ first day | ⚪ +0.00% |
+| [📈 Forex trend strategy](paper/REPORT.md) | Paper (simulated) | **$9,994.68** | ⚪ +$0.00 (+0.00%) | 🔴 −0.05% |
+|  | OANDA practice | **£99,971.91** | 🔴 −£28.09 (−0.03%) | 🔴 −0.03% |
+| [🤖 Forex learning model](paper_ml/REPORT.md) | Paper (simulated) | **$10,008.66** | 🟢 +$13.98 (+0.14%) | 🟢 +0.09% |
+|  | OANDA practice | **£99,942.13** | 🔴 −£57.87 (−0.06%) | 🔴 −0.06% |
 
 ## Today's trades
-- **📈 Forex trend strategy:** bought USD/CAD, USD/CHF, USD/JPY · sold AUD/USD, EUR/USD, GBP/USD, NZD/USD · OANDA: none (market closed)
-- **🤖 Forex learning model:** bought EUR/USD, NZD/USD, USD/CAD · sold AUD/USD, GBP/USD, USD/JPY · OANDA: none (market closed)
+- **📈 Forex trend strategy:** none
+- **🤖 Forex learning model:** none
 
 ## Go-live check
 A strategy is only eligible for a small live trial when every check passes (details on each strategy page).
 
-- **📈 Forex trend strategy:** ⏳ waiting for data (0.0 of 26 weeks)
-- **🤖 Forex learning model:** ⏳ waiting for data (0.0 of 26 weeks)
+- **📈 Forex trend strategy:** ⛔ not ready (0.1 of 26 weeks) · failing: runs reliably (no misses, mismatches, halts)
+- **🤖 Forex learning model:** ⏳ waiting for data (0.1 of 26 weeks)
 
 ## Coming up
 - Every weekday, 00:30 UTC: both strategies run, the daily summary goes to your phone

@@ -1,9 +1,8 @@
-token OK: it can reach 2 account(s): …814-001, …814-002
-[trend] …814-001: listed for this token
-    summary: OK (currency GBP, NAV 100,000.00)
-    positions: OK
-    pricing: OK
-[ml] …814-002: listed for this token
-    summary: OK (currency GBP, NAV 100,000.00)
-    positions: OK
-    pricing: OK
+token FAILED on account list: OANDA GET /v3/accounts failed: 504 <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Internal Server Error</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preload" as=
