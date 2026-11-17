@@ -278,7 +278,7 @@ def overview_page(cfg: dict, root: Path, now: datetime) -> str:
         out.append(f"- **{s['icon']} {s['name']}:** {GATE_WORDS.get(v, v)}"
                    + (f" ({dur})" if dur else "") + (f" · failing: {', '.join(failing)}" if failing else ""))
     out += ["", "## Coming up",
-            "- Every weekday, 00:30 UTC: both strategies run, the daily summary goes to your phone",
+            "- Every weekday, about 02:17 UTC (GitHub can start scheduled runs late): both strategies run, the daily summary goes to your phone",
             "- 16 Feb 2027: early review (about 13 weeks of data)",
             "- 18 May 2027: decision review (about 26 weeks): the go-live check gives the answer",
             "", "---",

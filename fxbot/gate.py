@@ -110,16 +110,32 @@ def evaluate(cfg: dict, root: Path, strategy: str, now: datetime | None = None) 
         assumed = {p: v[1] / 2 + cfg["costs"]["slippage_bps"] for p, v in cfg["pairs"].items()}
         a = filled["pair"].map(assumed).mean()
         real = filled["slippage_vs_mid_bps"].astype(float).mean()
-        years = max((last - start).days / 365, 1 / 365)
         fin_real = -float(eq["financing_total"].iloc[-1])          # OANDA: negative = paid
-        fin_assumed = (cfg["costs"]["financing_bps_year"] / 1e4 * eq["gross_leverage"].astype(float).mean()
-                       * nav0 * years)
-        fin_ok = fin_real <= g["cost_ratio_max"] * max(fin_assumed, 1e-9) or fin_real <= 0
-        ok = real <= g["cost_ratio_max"] * a and fin_ok
-        checks.append(Check("costs", "PASS" if ok else "FAIL",
-                            f"fills {real:.2f} bps vs assumed {a:.2f} bps (max x{g['cost_ratio_max']}); "
-                            f"financing paid {fin_real:,.2f} vs assumed {fin_assumed:,.2f} "
-                            f"({len(filled)} fills)"))
+        fills_ok = real <= g["cost_ratio_max"] * a
+        fills_txt = f"fills {real:.2f} bps vs assumed {a:.2f} bps (max x{g['cost_ratio_max']})"
+        # financing: judged only over days positions were actually held, and only once there are enough
+        held = eq[eq["gross_leverage"].astype(float) > 0]
+        held_days = len(pd.bdate_range(held["time"].iloc[0].normalize(), last.normalize())) if len(held) else 0
+        if held_days < g.get("min_financing_days", 10):
+            status = "FAIL" if not fills_ok else "WAIT"
+            checks.append(Check("costs", status, f"{fills_txt}; financing: too early to judge "
+                                f"({held_days} of {g.get('min_financing_days', 10)} weekdays held)"))
+        else:
+            years = held_days / 252
+            markup = cfg["costs"]["financing_bps_year"] / 1e4 * held["gross_leverage"].astype(float).mean() * years
+            # OANDA's financing includes the interest-rate carry; the learning-model paper account books
+            # that carry too, so expected = markup - carry (as fractions of the account, currency-neutral)
+            carry = 0.0
+            pst_f = paper / "state.json"
+            if pst_f.exists():
+                pst = json.loads(pst_f.read_text())
+                carry = float(pst.get("carry_earned", 0.0)) / float(pst.get("initial_capital", 1.0))
+            fin_assumed = (markup - carry) * nav0
+            note = "" if carry else " (paper account doesn't model carry)"
+            fin_ok = fin_real <= 0 or fin_real <= g["cost_ratio_max"] * max(fin_assumed, 1e-9)
+            checks.append(Check("costs", "PASS" if fills_ok and fin_ok else "FAIL",
+                                f"{fills_txt}; financing paid {fin_real:,.2f} vs expected {fin_assumed:,.2f}"
+                                f"{note} over {held_days} weekdays ({len(filled)} fills)"))
 
     # agreement with the paper account over the same dates
     peq = _read(paper / "equity.csv")

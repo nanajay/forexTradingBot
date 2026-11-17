@@ -107,7 +107,7 @@ python -m pytest -q
 Settings (pairs, spreads, mode, band, volatility target, leverage caps) are in `config.toml`.
 
 ## Deployment
-`.github/workflows/paper-trading.yml` runs at 00:30 UTC Monday to Friday, while the FX market is open (Monday's run acts on Friday's close).
+`.github/workflows/paper-trading.yml` runs at 02:17 UTC Monday to Friday, while the FX market is open (Monday's run acts on Friday's close).
 It runs `paper run` and `paper report`, then commits `paper/` back to `main`. Use **Actions → Daily FX paper
 trading → Run workflow** to start it right away (tick *backtest* to refresh `results/` too). The workflow
 needs **Settings → Actions → General → Workflow permissions → Read and write**. No secrets are needed.

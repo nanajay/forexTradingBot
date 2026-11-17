@@ -61,6 +61,7 @@ max_state_age_hours = 36.0  # don't act on a paper account that hasn't run recen
 min_weeks = 26              # practice account must run at least this long
 min_ic_t = 2.0              # learning model: live prediction IC t-stat at least this
 cost_ratio_max = 1.25       # real costs at most 25% above the paper assumptions
+min_financing_days = 10     # weekdays of held positions before financing is judged (not enough data before)
 max_tracking_gap = 0.03     # practice vs paper return gap at most 3 percentage points
 max_missed_days = 3         # missed weekday runs allowed
 max_order_problems = 2      # rejected/errored practice orders allowed

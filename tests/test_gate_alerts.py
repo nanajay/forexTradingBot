@@ -97,7 +97,8 @@ def test_alerts(tmp_path):
         # failed step -> PROBLEM title, high priority, both channels
         r = alerts.run(tmp_path, {"paper": "success", "ml": "failure"}, tue, post)
         assert r["sent"] == ["ntfy", "webhook"] and "problem" in r["message"] and "⚠️ PROBLEMS" in r["body"]
-        assert sent[0][0] == "https://ntfy.sh/t-test" and sent[0][1]["headers"]["Priority"] == "high"
+        assert sent[0][0] == "https://ntfy.sh/" and sent[0][1]["json"]["topic"] == "t-test"
+        assert sent[0][1]["json"]["priority"] == 4                       # high priority for problems
         # mismatch in today's practice run is reported
         d = tmp_path / "practice_trend"
         d.mkdir()
@@ -107,7 +108,8 @@ def test_alerts(tmp_path):
         # an alert failure never raises
         def boom(*a, **k):
             raise OSError("network down")
-        assert alerts.run(tmp_path, {"ml": "failure"}, tue, boom)["sent"][0].startswith("failed")
+        r = alerts.run(tmp_path, {"ml": "failure"}, tue, boom)
+        assert r["sent"] == [] and "network down" in r["error"]           # reported, not raised
     finally:
         del os.environ["ALERT_NTFY_TOPIC"], os.environ["ALERT_WEBHOOK_URL"]
 
@@ -144,3 +146,45 @@ def test_daily_summary_shows_trades_day_change_and_total(tmp_path):
     (q / "fills.csv").write_text("time,pair,units,status,price\n")       # without it: a normal headline
     r = alerts.run(tmp_path, {"paper": "success"}, now, lambda *a, **k: None)
     assert "up 0.25% today" in r["message"]                              # avg of +1.00% and −0.50%
+
+
+def test_emoji_titles_reach_ntfy_as_real_http_requests(monkeypatch):
+    """Regression: titles with 🟢/⚠️ used to go in an HTTP header and fail (UnicodeEncodeError)."""
+    import requests
+    seen = []
+
+    def real_prepare(url, **kw):              # build the request exactly as requests would send it
+        prep = requests.Request("POST", url, json=kw.get("json"), data=kw.get("data"),
+                                headers=kw.get("headers")).prepare()
+        for k, v in prep.headers.items():
+            (v if isinstance(v, bytes) else v.encode("latin-1"))   # what http.client does; raises on emoji
+        seen.append(prep)
+
+        class R:
+            status_code = 200
+        return R()
+    for title in ("FX bot · Tue 17 Nov · 🟢 up 0.38% today", "⚠️ FX bot · 1 problem(s), please check"):
+        assert alerts.send(title, "body 📈 £ €", ntfy_topic="t", webhook="https://example.invalid/h",
+                           post=real_prepare, urgent=True) == ["ntfy", "webhook"]
+    body = json.loads(seen[0].body)
+    assert body["topic"] == "t" and "🟢" in body["title"] and body["priority"] == 3 + 1
+
+
+def test_refused_or_failed_sends_are_reported_and_logged(tmp_path, monkeypatch):
+    class Bad:
+        status_code = 429
+        text = "too many requests"
+    import pytest
+    with pytest.raises(RuntimeError, match="429"):
+        alerts.send("t", "b", ntfy_topic="t", webhook="", post=lambda *a, **k: Bad())
+    monkeypatch.setenv("ALERT_NTFY_TOPIC", "t")
+    monkeypatch.delenv("ALERT_WEBHOOK_URL", raising=False)
+    (tmp_path / "results").mkdir()
+    tue = datetime(2026, 11, 17, 8, 30, tzinfo=timezone.utc)
+    r = alerts.run(tmp_path, {}, tue, lambda *a, **k: Bad())
+    assert r["error"] and "FAILED" in (tmp_path / "results" / "alert_log.csv").read_text()
+    # the next day's summary leads with the failure
+    wed = datetime(2026, 11, 18, 8, 30, tzinfo=timezone.utc)
+    ok = type("OK", (), {"status_code": 200})
+    r = alerts.run(tmp_path, {}, wed, lambda *a, **k: ok())
+    assert any("previous daily alert failed" in p for p in r["problems"]) and r["error"] is None

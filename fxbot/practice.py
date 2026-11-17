@@ -104,6 +104,23 @@ def plan_orders(weights: dict[str, float], marks: dict[str, float], nav: float, 
     return orders, skipped
 
 
+def place_with_safe_retry(client, account: str, o: dict, strategy: str, wait_s: float = 5.0) -> dict:
+    """Place a market order. If OANDA answers 401 (the passing authorization error it sometimes gives
+    a valid token), retry ONCE, and only after re-reading the account confirms the position is
+    unchanged, i.e. the first attempt placed nothing. Any other error is not retried."""
+    import time as _time
+    try:
+        return client.market_order(account, o["instrument"], o["units"], tag=f"fxbot-{strategy}")
+    except Exception as e:
+        if "-> 401" not in str(e):
+            raise
+        _time.sleep(wait_s)
+        held = int(round(client.positions(account).get(o["instrument"], 0.0)))
+        if held != o["current"]:
+            raise RuntimeError(f"{e} (position changed to {held}: not retrying)") from e
+        return client.market_order(account, o["instrument"], o["units"], tag=f"fxbot-{strategy}-retry")
+
+
 def run(cfg: dict, strategy: str, paper_dir: Path, out_dir: Path, account: str,
         client: OandaPractice | None = None, now: datetime | None = None, dry_run: bool = False) -> dict:
     now = now or datetime.now(timezone.utc)
@@ -145,7 +162,7 @@ def run(cfg: dict, strategy: str, paper_dir: Path, out_dir: Path, account: str,
             row.update(status="dry-run")
         else:
             try:
-                resp = client.market_order(account, o["instrument"], o["units"], tag=f"fxbot-{strategy}")
+                resp = place_with_safe_retry(client, account, o, strategy)
                 fill = resp.get("orderFillTransaction")
                 if fill:
                     px = float(fill["price"])

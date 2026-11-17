@@ -43,6 +43,11 @@ def problems_today(root: Path, outcomes: dict[str, str], now: datetime) -> list[
                    if l.startswith(today) and (",rejected," in l or ",error," in l)]
             if bad:
                 out.append(f"practice {s}: {len(bad)} order(s) rejected/errored today")
+    log = root / "results" / "alert_log.csv"            # the previous summary failed to send?
+    if log.exists():
+        rows = log.read_text().strip().splitlines()
+        if len(rows) > 1 and ",FAILED" in rows[-1] and not rows[-1].startswith(today):
+            out.append("the previous daily alert failed to send: " + rows[-1].split(",FAILED", 1)[1][:160])
     ml_log = root / "paper_ml" / "last_run.log"
     if ml_log.exists() and "Traceback" in ml_log.read_text():
         out.append("learning-model paper run crashed: " + ml_log.read_text().strip().splitlines()[-1][:200])
@@ -242,21 +247,54 @@ def daily_summary(root: Path, now: datetime) -> list[str]:
     return blocks
 
 
+def _check(resp, channel: str) -> None:
+    """Raise if the service refused the message (a mock that returns None counts as accepted)."""
+    code = getattr(resp, "status_code", 200)
+    if code >= 300:
+        raise RuntimeError(f"{channel} refused the message: HTTP {code} {getattr(resp, 'text', '')[:200]}")
+
+
 def send(title: str, body: str, ntfy_topic: str | None = None, webhook: str | None = None,
          post=requests.post, urgent: bool = False) -> list[str]:
+    """Send to every configured channel. Raises if any channel fails (the caller logs it).
+
+    ntfy gets JSON, not HTTP headers: header values can't carry emoji (UnicodeEncodeError),
+    which is how the daily summaries with a 🟢/🔴/⚠️ title silently failed to send."""
     ntfy_topic = ntfy_topic if ntfy_topic is not None else os.environ.get("ALERT_NTFY_TOPIC", "")
     webhook = webhook if webhook is not None else os.environ.get("ALERT_WEBHOOK_URL", "")
-    sent = []
+    sent, errors = [], []
     if ntfy_topic:
-        headers = {"Title": title, "Tags": "warning" if urgent else "chart_with_upwards_trend"}
-        if urgent:
-            headers["Priority"] = "high"
-        post(f"https://ntfy.sh/{ntfy_topic}", data=body.encode(), timeout=15, headers=headers)
-        sent.append("ntfy")
+        try:
+            _check(post("https://ntfy.sh/", timeout=20, json={
+                "topic": ntfy_topic, "title": title, "message": body,
+                "priority": 4 if urgent else 3,
+                "tags": ["warning"] if urgent else ["chart_with_upwards_trend"]}), "ntfy")
+            sent.append("ntfy")
+        except Exception as e:
+            errors.append(f"ntfy: {e}")
     if webhook:
-        post(webhook, json={"text": f"*{title}*\n{body}", "content": f"**{title}**\n{body}"}, timeout=15)
-        sent.append("webhook")
+        try:
+            _check(post(webhook, timeout=20,
+                        json={"text": f"*{title}*\n{body}", "content": f"**{title}**\n{body}"}), "webhook")
+            sent.append("webhook")
+        except Exception as e:
+            errors.append(f"webhook: {e}")
+    if errors:
+        raise RuntimeError("; ".join(errors) + (f" (sent OK: {', '.join(sent)})" if sent else ""))
     return sent
+
+
+def log_result(root: Path, now: datetime, title: str, result: str) -> None:
+    """Keep a record of every send attempt in the repo (results/alert_log.csv)."""
+    import csv
+    f = root / "results" / "alert_log.csv"
+    f.parent.mkdir(exist_ok=True)
+    new = not f.exists()
+    with open(f, "a", newline="") as fh:
+        w = csv.writer(fh)
+        if new:
+            w.writerow(["time", "title", "result"])
+        w.writerow([now.isoformat(timespec="seconds"), title, result])
 
 
 def run(root: Path, outcomes: dict[str, str], now: datetime | None = None, post=requests.post) -> dict:
@@ -274,12 +312,17 @@ def run(root: Path, outcomes: dict[str, str], now: datetime | None = None, post=
     parts.append("Details: results/GATE.md · paper*/REPORT.md · practice_*/RUNS.md")
     body = "\n\n".join(parts)
     title = headline(now, probs, getattr(daily_summary, "avg_day_pct", None))
+    error = None
     try:
         sent = send(title, body, post=post, urgent=bool(probs))
-    except Exception as e:                                   # never fail the workflow over an alert
-        sent = [f"failed: {e}"]
-    print(f"{title}\n{body}\nsent via: {sent or 'nothing configured (printed only)'}")
-    return {"sent": sent, "problems": probs, "message": title, "body": body}
+    except Exception as e:                  # recorded and reported, never hidden
+        sent, error = [], str(e)[:300]
+    configured = bool(os.environ.get("ALERT_NTFY_TOPIC") or os.environ.get("ALERT_WEBHOOK_URL"))
+    if configured:
+        log_result(root, now, title, f"FAILED: {error}" if error else "sent via " + ", ".join(sent))
+    print(f"{title}\n{body}\n" + (f"ALERT FAILED TO SEND: {error}" if error
+                                   else f"sent via: {sent or 'nothing configured (printed only)'}"))
+    return {"sent": sent, "problems": probs, "message": title, "body": body, "error": error}
 
 
 def headline(now: datetime, probs: list[str], avg_day_pct: float | None) -> str:

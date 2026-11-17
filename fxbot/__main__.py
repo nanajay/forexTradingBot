@@ -77,12 +77,13 @@ def main(argv: list[str] | None = None) -> int:
             report(cfg, ROOT)
             now = datetime.now(timezone.utc)
             body = "\n\n".join(daily_summary(ROOT, now))
-            sent = send(f"FX bot TEST · {now:%a %d %b} · daily summary format", body)
+            sent = send(f"🧪 FX bot TEST · {now:%a %d %b} · daily summary format", body)
             print(body)
             print(f"test alert sent via: {sent or 'nothing configured: set ALERT_NTFY_TOPIC or ALERT_WEBHOOK_URL'}")
             return 0 if sent else 1
         outcomes = dict(kv.split("=", 1) for kv in args.outcomes.split() if "=" in kv)
-        alert_run(ROOT, outcomes)
+        out = alert_run(ROOT, outcomes)
+        return 1 if out.get("error") else 0          # a failed send shows as a failed step
     elif args.cmd == "practice":
         import os
         from . import practice

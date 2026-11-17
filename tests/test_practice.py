@@ -171,3 +171,32 @@ def test_reads_retry_a_passing_401_but_orders_never_retry(monkeypatch):
     with pytest.raises(RuntimeError):
         c.market_order("101-004-1-001", "EUR_USD", 100, "t")
     assert len(calls) == 1
+
+
+def test_order_401_is_retried_only_after_confirming_nothing_was_placed(monkeypatch):
+    import pytest
+    o = {"instrument": "EUR_USD", "units": 1000, "current": 0}
+
+    class Flaky(FakeOanda):
+        def __init__(self, fail_times, placed_anyway=False):
+            super().__init__()
+            self.fail_times, self.placed_anyway, self.calls = fail_times, placed_anyway, 0
+
+        def market_order(self, a, inst, units, tag):
+            self.calls += 1
+            if self.calls <= self.fail_times:
+                if self.placed_anyway:
+                    self.pos[inst] = self.pos.get(inst, 0) + units
+                raise RuntimeError("OANDA POST /v3/accounts/<id>/orders -> 401: {}")
+            return super().market_order(a, inst, units, tag)
+    c = Flaky(1)
+    assert "orderFillTransaction" in practice.place_with_safe_retry(c, "a", o, "trend", wait_s=0)
+    assert c.calls == 2 and c.pos["EUR_USD"] == 1000                     # placed exactly once
+    c = Flaky(1, placed_anyway=True)                                     # first attempt did go through
+    with pytest.raises(RuntimeError, match="not retrying"):
+        practice.place_with_safe_retry(c, "a", o, "trend", wait_s=0)
+    assert c.calls == 1
+    c = Flaky(2)                                                         # retried once only
+    with pytest.raises(RuntimeError):
+        practice.place_with_safe_retry(c, "a", o, "trend", wait_s=0)
+    assert c.calls == 2
