@@ -6,3 +6,5 @@ time,pair,units,target,mid_before,spread_bps,status,price,slippage_vs_mid_bps,ha
 2026-11-16T07:10:39+00:00,USD/CAD,98576,98576,1.4277449999999998,1.19,filled,1.42781,0.46,4.7068,0.0,0.0,
 2026-11-16T07:10:39+00:00,USD/CHF,67838,67838,0.839305,1.79,filled,0.83943,1.49,4.5913,0.0,0.0,
 2026-11-16T07:10:39+00:00,NZD/USD,-113144,-113144,0.5522100000000001,2.17,error,,,,,,"OANDA POST /v3/accounts/<id>/orders -> 401: {""errorMessage"":""Insufficient authorization to perform request.""}"
+2026-11-17T08:23:53+00:00,USD/JPY,44504,44504,159.26999999999998,1.0,filled,159.278,0.5,1.6945,0.0,0.0,
+2026-11-17T08:23:53+00:00,NZD/USD,-112750,-112750,0.54971,2.55,filled,0.54964,1.27,5.9827,0.0,0.0,
