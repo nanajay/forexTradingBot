@@ -10,3 +10,4 @@
 - 2026-11-16T07:10:39+00:00 [trend] NAV 99,971.91 GBP (-0.03% since 2026-11-14), gross 3.18x; 7 order(s), 5 filled; MISMATCH: [{'pair': 'USD/JPY', 'target': 44651, 'held': 0}, {'pair': 'NZD/USD', 'target': -113144, 'held': 0}]
 - 2026-11-17T08:23:53+00:00 [trend] NAV 100,410.00 GBP (+0.41% since 2026-11-14), gross 3.97x; 2 order(s), 2 filled
 - 2026-11-17T16:08:21+00:00 [trend] NAV 100,157.29 GBP (+0.16% since 2026-11-14), gross 3.98x; 0 order(s), 0 filled
+- 2026-11-18T10:08:53+00:00 [trend] NAV 100,960.02 GBP (+0.96% since 2026-11-14), gross 3.95x; 0 order(s), 0 filled

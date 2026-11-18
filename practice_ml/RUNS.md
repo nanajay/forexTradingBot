@@ -8,3 +8,4 @@
 - 2026-11-16T07:11:24+00:00 [ml] NAV 99,942.13 GBP (-0.06% since 2026-11-14), gross 4.00x; 6 order(s), 6 filled
 - 2026-11-17T08:23:54+00:00 [ml] NAV 100,008.79 GBP (+0.01% since 2026-11-14), gross 3.99x; 0 order(s), 0 filled
 - 2026-11-17T16:08:21+00:00 [ml] NAV 99,873.60 GBP (-0.13% since 2026-11-14), gross 3.99x; 0 order(s), 0 filled
+- 2026-11-18T10:08:54+00:00 [ml] NAV 100,055.75 GBP (+0.06% since 2026-11-14), gross 3.99x; 0 order(s), 0 filled

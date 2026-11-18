@@ -15,3 +15,4 @@
 - 2026-11-16T07:09:59+00:00 signal 2026-11-13: equity $10,016.79 (+0.17%), gross 3.99x; no trades (already processed, re-marked only)
 - 2026-11-17T08:23:22+00:00 signal 2026-11-16: equity $10,084.57 (+0.85%), gross 3.96x; no trades
 - 2026-11-17T16:08:05+00:00 signal 2026-11-16: equity $10,059.73 (+0.60%), gross 3.97x; no trades (already processed, re-marked only)
+- 2026-11-18T10:08:07+00:00 signal 2026-11-17: equity $10,134.53 (+1.35%), gross 3.94x; no trades
