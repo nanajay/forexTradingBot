@@ -1,23 +1,23 @@
 # FX bot overview
 
-Updated Thu 19 Nov 2026, 10:18 UTC · **practice and simulated money only, no real trades**
+Updated Fri 20 Nov 2026, 09:59 UTC · **practice and simulated money only, no real trades**
 
 | Strategy | Account | Value | Today | Since start |
 |---|---|---:|---|---|
-| [📈 Forex trend strategy](paper/REPORT.md) | Paper (simulated) | **$10,123.11** | 🔴 −$11.42 (−0.11%) | 🟢 +1.23% |
-|  | OANDA practice | **£100,851.01** | 🔴 −£109.01 (−0.11%) | 🟢 +0.85% |
-| [🤖 Forex learning model](paper_ml/REPORT.md) | Paper (simulated) | **$10,074.01** | 🟢 +$49.86 (+0.50%) | 🟢 +0.74% |
-|  | OANDA practice | **£100,495.10** | 🟢 +£439.35 (+0.44%) | 🟢 +0.50% |
+| [📈 Forex trend strategy](paper/REPORT.md) | Paper (simulated) | **$10,195.90** | 🟢 +$72.79 (+0.72%) | 🟢 +1.96% |
+|  | OANDA practice | **£101,599.61** | 🟢 +£748.60 (+0.74%) | 🟢 +1.60% |
+| [🤖 Forex learning model](paper_ml/REPORT.md) | Paper (simulated) | **$10,158.96** | 🟢 +$84.95 (+0.84%) | 🟢 +1.59% |
+|  | OANDA practice | **£101,332.96** | 🟢 +£837.86 (+0.83%) | 🟢 +1.33% |
 
 ## Today's trades
-- **📈 Forex trend strategy:** bought GBP/USD · OANDA: same, filled ✅
+- **📈 Forex trend strategy:** sold GBP/USD · OANDA: same, filled ✅
 - **🤖 Forex learning model:** none
 
 ## Go-live check
 A strategy is only eligible for a small live trial when every check passes (details on each strategy page).
 
-- **📈 Forex trend strategy:** ⛔ not ready (0.6 of 26 weeks) · failing: runs reliably (no misses, mismatches, halts)
-- **🤖 Forex learning model:** ⏳ waiting for data (0.6 of 26 weeks)
+- **📈 Forex trend strategy:** ⛔ not ready (0.7 of 26 weeks) · failing: runs reliably (no misses, mismatches, halts)
+- **🤖 Forex learning model:** ⏳ waiting for data (0.7 of 26 weeks)
 
 ## Coming up
 - Every weekday, about 02:17 UTC (GitHub can start scheduled runs late): both strategies run, the daily summary goes to your phone

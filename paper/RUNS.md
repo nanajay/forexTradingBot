@@ -17,3 +17,4 @@
 - 2026-11-17T16:08:05+00:00 signal 2026-11-16: equity $10,059.73 (+0.60%), gross 3.97x; no trades (already processed, re-marked only)
 - 2026-11-18T10:08:07+00:00 signal 2026-11-17: equity $10,134.53 (+1.35%), gross 3.94x; no trades
 - 2026-11-19T10:18:40+00:00 signal 2026-11-18: equity $10,123.11 (+1.23%), gross 3.57x; 1 fill(s): buy 2,878 GBP/USD @ 1.3154
+- 2026-11-20T09:59:43+00:00 signal 2026-11-19: equity $10,195.90 (+1.96%), gross 3.95x; 1 fill(s): sell 3,250 GBP/USD @ 1.3102
