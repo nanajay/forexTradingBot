@@ -1,6 +1,6 @@
 # 📈 Forex trend strategy
 
-Updated Fri 20 Nov 2026, 09:59 UTC · **practice and simulated money only, no real trades**
+Updated Mon 23 Nov 2026, 10:45 UTC · **practice and simulated money only, no real trades**
 
 > Follows the trend of each of the 7 major currency pairs: 7 fixed signals per pair (price vs its 20/50/100/200-day averages, 30/90/180-day momentum). Long when the trend is up, short when it's down, sized to a 10% volatility target. Trades when a pair's signal changes.
 
@@ -8,11 +8,11 @@ Updated Fri 20 Nov 2026, 09:59 UTC · **practice and simulated money only, no re
 
 | | Paper (simulated $) | OANDA practice (demo £) |
 |---|---:|---:|
-| **Account value** | **$10,195.90** | **£101,599.61** |
-| Today | 🟢 +$72.79 (+0.72%) | 🟢 +£748.60 (+0.74%) |
-| Since start | 🟢 +1.96% (since 2026-11-14) | 🟢 +1.60% (since 2026-11-14) |
+| **Account value** | **$10,228.39** | **£101,958.66** |
+| Today | 🟢 +$32.49 (+0.32%) | 🟢 +£359.05 (+0.35%) |
+| Since start | 🟢 +2.28% (since 2026-11-14) | 🟢 +1.96% (since 2026-11-14) |
 | Trading costs paid | $6.33 | in the OANDA fill prices |
-| Go-live check | ⛔ not ready (0.7 of 26 weeks) | |
+| Go-live check | ⛔ not ready (1.1 of 26 weeks) | |
 
 ## What it's betting on
 
@@ -28,12 +28,11 @@ Each position is a bet on a currency rising (↑) or falling (↓) against the U
 | CHF | ↓ falls | 0.50× |
 | NZD | ↓ falls | 0.46× |
 
-Total exposure: **3.95×** the account value.
+Total exposure: **3.94×** the account value.
 
 ## Today's trades
 
-- **Paper:** sold GBP/USD
-- **OANDA practice:** the same trades, filled at OANDA ✅
+None today.
 
 ## Performance
 
@@ -43,6 +42,7 @@ Total exposure: **3.95×** the account value.
 
 | Date | Paper | OANDA practice |
 |---|---:|---:|
+| 2026-11-23 | +2.28% | +1.96% |
 | 2026-11-20 | +1.96% | +1.60% |
 | 2026-11-19 | +1.23% | +0.85% |
 | 2026-11-18 | +1.35% | +0.96% |
@@ -56,10 +56,10 @@ Total exposure: **3.95×** the account value.
 
 | | Check | Detail |
 |---|---|---|
-| ⏳ | Long enough on OANDA practice | 0.7 of 26 weeks |
-| ⏳ | Making money after costs | practice return +1.60% after all costs |
-| ⏳ | Real costs close to the assumptions | fills 0.68 bps vs assumed 1.32 bps (max x1.25); financing: too early to judge (5 of 10 weekdays held) |
-| ✅ | Practice matches paper | practice +1.60% vs paper +2.01% (gap -0.41 pts, max 3) |
+| ⏳ | Long enough on OANDA practice | 1.1 of 26 weeks |
+| ⏳ | Making money after costs | practice return +1.96% after all costs |
+| ⏳ | Real costs close to the assumptions | fills 0.68 bps vs assumed 1.32 bps (max x1.25); financing: too early to judge (6 of 10 weekdays held) |
+| ✅ | Practice matches paper | practice +1.96% vs paper +2.34% (gap -0.38 pts, max 3) |
 | ❌ | Runs reliably (no misses, mismatches, halts) | missed weekdays 0; mismatches 1; order problems 2; not halted |
 | ✅ | Losses stay limited | worst fall -0.3% (limit -20%) |
 

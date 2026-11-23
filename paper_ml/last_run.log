@@ -1,8 +1,105 @@
 {
- "log": "- 2026-11-20T09:59:45+00:00 week of 2026-11-13: equity $10,158.96 (+1.59%), gross 3.92x; marked only",
- "already_processed": true,
- "fills": []
+ "log": "- 2026-11-23T10:44:50+00:00 week of 2026-11-20: equity $10,106.46 (+1.06%), gross 4.00x; retrained, 7 fill(s)",
+ "already_processed": false,
+ "fills": [
+  {
+   "time": "2026-11-23T10:44:50+00:00",
+   "signal_day": "2026-11-20",
+   "pair": "AUD/USD",
+   "side": "buy",
+   "units": 19986.32,
+   "price": 0.6646,
+   "notional_usd": 13282.91,
+   "cost_usd": 1.66,
+   "ccy_exposure": 0.6667
+  },
+  {
+   "time": "2026-11-23T10:44:50+00:00",
+   "signal_day": "2026-11-20",
+   "pair": "USD/CAD",
+   "side": "sell",
+   "units": 13408.88,
+   "price": 1.4329,
+   "notional_usd": 13408.88,
+   "cost_usd": 2.01,
+   "ccy_exposure": 0.6667
+  },
+  {
+   "time": "2026-11-23T10:44:50+00:00",
+   "signal_day": "2026-11-20",
+   "pair": "USD/CHF",
+   "side": "buy",
+   "units": 6742.21,
+   "price": 0.8391,
+   "notional_usd": 6742.21,
+   "cost_usd": 1.01,
+   "ccy_exposure": -0.6667
+  },
+  {
+   "time": "2026-11-23T10:44:50+00:00",
+   "signal_day": "2026-11-20",
+   "pair": "EUR/USD",
+   "side": "sell",
+   "units": 6045.22,
+   "price": 1.0972,
+   "notional_usd": 6632.81,
+   "cost_usd": 0.66,
+   "ccy_exposure": 0.0
+  },
+  {
+   "time": "2026-11-23T10:44:50+00:00",
+   "signal_day": "2026-11-20",
+   "pair": "GBP/USD",
+   "side": "sell",
+   "units": 96.13,
+   "price": 1.3109,
+   "notional_usd": 126.02,
+   "cost_usd": 0.02,
+   "ccy_exposure": -0.6667
+  },
+  {
+   "time": "2026-11-23T10:44:50+00:00",
+   "signal_day": "2026-11-20",
+   "pair": "USD/JPY",
+   "side": "buy",
+   "units": 13408.88,
+   "price": 159.096,
+   "notional_usd": 13408.88,
+   "cost_usd": 1.47,
+   "ccy_exposure": -0.6667
+  },
+  {
+   "time": "2026-11-23T10:44:50+00:00",
+   "signal_day": "2026-11-20",
+   "pair": "NZD/USD",
+   "side": "buy",
+   "units": 259.44,
+   "price": 0.547,
+   "notional_usd": 141.91,
+   "cost_usd": 0.02,
+   "ccy_exposure": 0.6667
+  }
+ ],
+ "n_train_rows": 7833,
+ "pred": {
+  "AUD": -0.0276,
+  "CAD": -0.0278,
+  "CHF": -0.1098,
+  "EUR": -0.0586,
+  "GBP": -0.1913,
+  "JPY": -0.1189,
+  "NZD": 0.0448
+ },
+ "exposure": {
+  "AUD": 0.667,
+  "CAD": 0.667,
+  "CHF": -0.667,
+  "EUR": 0.0,
+  "GBP": -0.667,
+  "JPY": -0.667,
+  "NZD": 0.667
+ }
 }
 ML PAPER account since 2026-11-14T15:51:06+00:00 (start $10,000.00)
-equity $10,158.96 (+1.59%), weeks traded 1, costs $5.23, financing $3.15, carry $-3.77
-live scorecard: {'weeks_scored': 0}
+equity $10,106.46 (+1.06%), weeks traded 2, costs $12.10, financing $4.80, carry $-5.74
+live scorecard: {'weeks_scored': 1, 'mean_IC': 0.2857, 'IC_t': None, 'weeks_long_beat_short_%': 100.0}
