@@ -1,9 +1,9 @@
-token OK: it can reach 2 account(s): …814-001, …814-002
+token OK: it can reach 2 account(s): …814-002, …814-001
 [trend] …814-001: listed for this token
-    summary: OK (currency GBP, NAV 101,955.16)
+    summary: OK (currency GBP, NAV 102,076.59)
     positions: OK
     pricing: OK
 [ml] …814-002: listed for this token
-    summary: OK (currency GBP, NAV 100,873.18)
+    summary: OK (currency GBP, NAV 100,808.55)
     positions: OK
     pricing: OK

@@ -1,7 +1,7 @@
 {
  "started": "2026-11-14T15:49:01+00:00",
  "initial_capital": 10000.0,
- "balance": 10228.390570810185,
+ "balance": 10240.816064866585,
  "units": {
   "EUR/USD": -6523.798008128806,
   "GBP/USD": -5695.758066779108,
@@ -12,13 +12,13 @@
   "NZD/USD": -8581.027194621114
  },
  "mark": {
-  "EUR/USD": 1.0972,
-  "GBP/USD": 1.311,
-  "USD/JPY": 159.093,
-  "AUD/USD": 0.6646,
-  "USD/CAD": 1.4329,
-  "USD/CHF": 0.839,
-  "NZD/USD": 0.547
+  "EUR/USD": 1.0961,
+  "GBP/USD": 1.309,
+  "USD/JPY": 159.122,
+  "AUD/USD": 0.6644,
+  "USD/CAD": 1.4328,
+  "USD/CHF": 0.8377,
+  "NZD/USD": 0.5469
  },
  "signal": {
   "EUR/USD": -1.0,
@@ -29,8 +29,8 @@
   "USD/CHF": 1.0,
   "NZD/USD": -1.0
  },
- "last_signal_day": "2026-11-20",
- "last_run": "2026-11-23T10:44:47+00:00",
+ "last_signal_day": "2026-11-23",
+ "last_run": "2026-11-24T12:27:59+00:00",
  "costs_paid": 6.327613647209856,
- "financing_paid": 4.768850214132657
+ "financing_paid": 5.359528995387433
 }
