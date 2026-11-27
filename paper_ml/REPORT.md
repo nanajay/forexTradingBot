@@ -1,6 +1,6 @@
 # 🤖 Forex learning model
 
-Updated Thu 26 Nov 2026, 10:51 UTC · **practice and simulated money only, no real trades**
+Updated Fri 27 Nov 2026, 10:50 UTC · **practice and simulated money only, no real trades**
 
 > A LightGBM model retrained every week on 24 inputs per currency (momentum, trend, volatility, interest rates, market mood). Each Monday it buys the 3 currencies it expects to be strongest next week and sells the 3 weakest, with no net bet on the dollar, 10% volatility target.
 
@@ -8,11 +8,11 @@ Updated Thu 26 Nov 2026, 10:51 UTC · **practice and simulated money only, no re
 
 | | Paper (simulated $) | OANDA practice (demo £) |
 |---|---:|---:|
-| **Account value** | **$10,111.19** | **£100,908.58** |
-| Today | 🟢 +$87.15 (+0.87%) | 🟢 +£898.38 (+0.90%) |
-| Since start | 🟢 +1.11% (since 2026-11-14) | 🟢 +0.91% (since 2026-11-14) |
+| **Account value** | **$10,179.53** | **£101,531.74** |
+| Today | 🟢 +$68.34 (+0.68%) | 🟢 +£623.16 (+0.62%) |
+| Since start | 🟢 +1.80% (since 2026-11-14) | 🟢 +1.53% (since 2026-11-14) |
 | Trading costs paid | $12.10 | in the OANDA fill prices |
-| Go-live check | ⏳ waiting for data (1.6 of 26 weeks) | |
+| Go-live check | ⛔ not ready (1.7 of 26 weeks) | |
 
 ## What it's betting on
 
@@ -20,14 +20,14 @@ Each position is a bet on a currency rising (↑) or falling (↓) against the U
 
 | Currency | Bet vs USD | Size |
 |---|---|---:|
-| GBP | ↓ falls | 0.67× |
-| JPY | ↓ falls | 0.67× |
+| GBP | ↓ falls | 0.66× |
+| JPY | ↓ falls | 0.66× |
 | AUD | ↑ rises | 0.67× |
-| CAD | ↑ rises | 0.67× |
-| CHF | ↓ falls | 0.67× |
-| NZD | ↑ rises | 0.67× |
+| CAD | ↑ rises | 0.66× |
+| CHF | ↓ falls | 0.66× |
+| NZD | ↑ rises | 0.66× |
 
-Total exposure: **4.00×** the account value.
+Total exposure: **3.98×** the account value.
 
 ## Today's trades
 
@@ -57,6 +57,7 @@ carry, vol_ratio, vol_level, mom_5, dist_sma50, rsi14, carry_x_vixchg, dist_sma2
 
 | Date | Paper | OANDA practice |
 |---|---:|---:|
+| 2026-11-27 | +1.80% | +1.53% |
 | 2026-11-26 | +1.11% | +0.91% |
 | 2026-11-25 | +0.24% | +0.01% |
 | 2026-11-24 | +1.04% | +0.81% |
@@ -70,14 +71,14 @@ carry, vol_ratio, vol_level, mom_5, dist_sma50, rsi14, carry_x_vixchg, dist_sma2
 
 </details>
 
-## Go-live check: ⏳ waiting for data
+## Go-live check: ⛔ not ready
 
 | | Check | Detail |
 |---|---|---|
-| ⏳ | Long enough on OANDA practice | 1.6 of 26 weeks |
-| ⏳ | Making money after costs | practice return +0.91% after all costs; live IC: 1 week(s) scored |
-| ⏳ | Real costs close to the assumptions | fills 0.68 bps vs assumed 1.29 bps (max x1.25); financing: too early to judge (9 of 10 weekdays held) |
-| ✅ | Practice matches paper | practice +0.91% vs paper +1.16% (gap -0.26 pts, max 3) |
+| ⏳ | Long enough on OANDA practice | 1.7 of 26 weeks |
+| ⏳ | Making money after costs | practice return +1.53% after all costs; live IC: 1 week(s) scored |
+| ❌ | Real costs close to the assumptions | fills 0.68 bps vs assumed 1.29 bps (max x1.25); financing paid 153.62 vs expected 101.38 over 10 weekdays (11 fills) |
+| ✅ | Practice matches paper | practice +1.53% vs paper +1.85% (gap -0.32 pts, max 3) |
 | ✅ | Runs reliably (no misses, mismatches, halts) | missed weekdays 0; mismatches 0; order problems 0; not halted |
 | ✅ | Losses stay limited | worst fall -1.3% (limit -20%) |
 

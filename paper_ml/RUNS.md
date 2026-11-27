@@ -20,3 +20,4 @@
 - 2026-11-24T12:28:03+00:00 week of 2026-11-20: equity $10,103.62 (+1.04%), gross 4.00x; marked only
 - 2026-11-25T11:16:32+00:00 week of 2026-11-20: equity $10,024.04 (+0.24%), gross 4.03x; marked only
 - 2026-11-26T10:51:37+00:00 week of 2026-11-20: equity $10,111.19 (+1.11%), gross 4.00x; marked only
+- 2026-11-27T10:50:06+00:00 week of 2026-11-20: equity $10,179.53 (+1.80%), gross 3.98x; marked only

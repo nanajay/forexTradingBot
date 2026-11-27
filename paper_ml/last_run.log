@@ -1,8 +1,8 @@
 {
- "log": "- 2026-11-26T10:51:37+00:00 week of 2026-11-20: equity $10,111.19 (+1.11%), gross 4.00x; marked only",
+ "log": "- 2026-11-27T10:50:06+00:00 week of 2026-11-20: equity $10,179.53 (+1.80%), gross 3.98x; marked only",
  "already_processed": true,
  "fills": []
 }
 ML PAPER account since 2026-11-14T15:51:06+00:00 (start $10,000.00)
-equity $10,111.19 (+1.11%), weeks traded 2, costs $12.10, financing $6.46, carry $-3.11
+equity $10,179.53 (+1.80%), weeks traded 2, costs $12.10, financing $7.01, carry $-2.23
 live scorecard: {'weeks_scored': 1, 'mean_IC': 0.2857, 'IC_t': None, 'weeks_long_beat_short_%': 100.0}

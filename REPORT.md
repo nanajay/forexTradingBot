@@ -1,13 +1,13 @@
 # FX bot overview
 
-Updated Thu 26 Nov 2026, 10:51 UTC · **practice and simulated money only, no real trades**
+Updated Fri 27 Nov 2026, 10:50 UTC · **practice and simulated money only, no real trades**
 
 | Strategy | Account | Value | Today | Since start |
 |---|---|---:|---|---|
-| [📈 Forex trend strategy](paper/REPORT.md) | Paper (simulated) | **$10,139.59** | 🔴 −$127.72 (−1.24%) | 🟢 +1.40% |
-|  | OANDA practice | **£101,089.63** | 🔴 −£1,243.72 (−1.22%) | 🟢 +1.09% |
-| [🤖 Forex learning model](paper_ml/REPORT.md) | Paper (simulated) | **$10,111.19** | 🟢 +$87.15 (+0.87%) | 🟢 +1.11% |
-|  | OANDA practice | **£100,908.58** | 🟢 +£898.38 (+0.90%) | 🟢 +0.91% |
+| [📈 Forex trend strategy](paper/REPORT.md) | Paper (simulated) | **$10,127.88** | 🔴 −$11.71 (−0.12%) | 🟢 +1.28% |
+|  | OANDA practice | **£100,960.39** | 🔴 −£129.24 (−0.13%) | 🟢 +0.96% |
+| [🤖 Forex learning model](paper_ml/REPORT.md) | Paper (simulated) | **$10,179.53** | 🟢 +$68.34 (+0.68%) | 🟢 +1.80% |
+|  | OANDA practice | **£101,531.74** | 🟢 +£623.16 (+0.62%) | 🟢 +1.53% |
 
 ## Today's trades
 - **📈 Forex trend strategy:** none
@@ -16,8 +16,8 @@ Updated Thu 26 Nov 2026, 10:51 UTC · **practice and simulated money only, no re
 ## Go-live check
 A strategy is only eligible for a small live trial when every check passes (details on each strategy page).
 
-- **📈 Forex trend strategy:** ⛔ not ready (1.6 of 26 weeks) · failing: runs reliably (no misses, mismatches, halts)
-- **🤖 Forex learning model:** ⏳ waiting for data (1.6 of 26 weeks)
+- **📈 Forex trend strategy:** ⛔ not ready (1.7 of 26 weeks) · failing: runs reliably (no misses, mismatches, halts)
+- **🤖 Forex learning model:** ⛔ not ready (1.7 of 26 weeks) · failing: real costs close to the assumptions
 
 ## Coming up
 - Every weekday, about 02:17 UTC (GitHub can start scheduled runs late): both strategies run, the daily summary goes to your phone
